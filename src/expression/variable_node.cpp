@@ -1,6 +1,4 @@
 #include "expression/variable_node.h"
-#include "expression/trace.h"
-#include <sstream>
 
 namespace Expression {
 

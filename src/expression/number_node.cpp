@@ -1,5 +1,4 @@
 #include "expression/number_node.h"
-#include <sstream>
 
 namespace Expression {
 

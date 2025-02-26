@@ -1,7 +1,4 @@
 #include "expression/sin_node.h"
-#include <cmath>
-#include <sstream>
-#include <string>
 
 namespace Expression {
 

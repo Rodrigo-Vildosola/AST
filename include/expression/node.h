@@ -1,10 +1,8 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
-#include <string>
-#include <sstream>
-#include <unordered_map>
-#include "trace.h"
+#include "_pch.h"
+#include "tracing/trace.h"
 
 namespace Expression {
 

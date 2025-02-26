@@ -1,8 +1,4 @@
 #include "expression/equality_node.h"
-#include "expression/trace.h"
-#include <sstream>
-#include <cmath>
-#include <string>
 
 namespace Expression {
 

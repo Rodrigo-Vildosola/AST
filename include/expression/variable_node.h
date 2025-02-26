@@ -2,8 +2,6 @@
 #define VARIABLE_NODE_H
 
 #include "node.h"
-#include <string>
-#include <unordered_map>
 
 namespace Expression {
 

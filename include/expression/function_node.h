@@ -2,10 +2,6 @@
 #define FUNCTION_NODE_H
 
 #include "node.h"
-#include <vector>
-#include <functional>
-#include <string>
-#include <stdexcept>
 
 namespace Expression {
 

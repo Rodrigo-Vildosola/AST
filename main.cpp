@@ -7,7 +7,7 @@
 #include "expression/variable_node.h"
 #include "expression/equality_node.h"
 #include "expression/function_node.h"
-#include "expression/trace.h"
+#include "tracing/trace.h"
 
 using namespace Expression;
 
@@ -41,7 +41,6 @@ int main() {
 
     // Construct a multi-argument function node: f(x, y) = x * y
     auto multiply = [](const std::vector<double>& args) -> double {
-        // Basic multiplication of the first two arguments.
         return args[0] * args[1];
     };
     std::vector<Node*> funcArgs;

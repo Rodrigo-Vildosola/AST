@@ -6,6 +6,12 @@
 
 namespace Expression {
 
+struct Step {
+    std::string message;  // e.g., "Substitute x with π"
+    std::string expressionBefore;
+    std::string expressionAfter;
+};
+
 // A simple tracing utility to log evaluation steps.
 class Trace {
 public:

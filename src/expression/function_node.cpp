@@ -1,8 +1,5 @@
 #include "expression/function_node.h"
-#include "expression/trace.h"
-#include <sstream>
-#include <string>
-#include <stdexcept>
+
 
 namespace Expression {
 
