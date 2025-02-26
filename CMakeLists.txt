@@ -11,8 +11,11 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+set(NLOHMANN_JSON_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/nlohmann/include)
+
 # Add include directory (for public headers)
 include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${NLOHMANN_JSON_DIR})
 
 # Collect all source files for the static library.
 file(GLOB LIB_SOURCES "${CMAKE_SOURCE_DIR}/src/expression/*.cpp")
