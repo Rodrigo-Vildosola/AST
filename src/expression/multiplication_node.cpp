@@ -98,4 +98,32 @@ Node* MultiplicationNode::clone(NodeFactory &factory) const {
     return factory.mul(left->clone(factory), right->clone(factory));
 }
 
+bool MultiplicationNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
+    // Try left factor as constant.
+    double a1 = 0, b1 = 0;
+    if (left->extractLinearCoeffs(var, a1, b1) && a1 == 0) {
+        // left is constant; let c = b1.
+        double c = b1;
+        double a2 = 0, b2 = 0;
+        if (right->extractLinearCoeffs(var, a2, b2)) {
+            coeff = a2 * c;
+            constant = b2 * c;
+            return true;
+        }
+    }
+    // Try right factor as constant.
+    double a2 = 0, b2 = 0;
+    if (right->extractLinearCoeffs(var, a2, b2) && a2 == 0) {
+        double c = b2;
+        double a1_ = 0, b1_ = 0;
+        if (left->extractLinearCoeffs(var, a1_, b1_)) {
+            coeff = a1_ * c;
+            constant = b1_ * c;
+            return true;
+        }
+    }
+    return false;
+}
+
+
 } // namespace Expression

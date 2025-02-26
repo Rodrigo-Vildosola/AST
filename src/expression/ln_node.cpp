@@ -57,4 +57,17 @@ Node* LnNode::clone(NodeFactory &factory) const {
     return factory.ln(operand->clone(factory));
 }
 
+bool LnNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
+    double a = 0, b = 0;
+    if (operand->extractLinearCoeffs(var, a, b)) {
+        if (a == 0) {  // Operand is constant.
+            coeff = 0;
+            constant = std::log(b);
+            return true;
+        }
+    }
+    return false;
+}
+
+
 } // namespace Expression

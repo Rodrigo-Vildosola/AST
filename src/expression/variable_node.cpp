@@ -50,4 +50,13 @@ Node* VariableNode::clone(NodeFactory &factory) const {
     return factory.var(name);
 }
 
+bool VariableNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
+    if (name == var) {
+        coeff = 1.0;
+        constant = 0.0;
+        return true;
+    }
+    return false;
+}
+
 } // namespace Expression

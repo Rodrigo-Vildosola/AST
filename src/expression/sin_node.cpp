@@ -60,4 +60,17 @@ Node* SinNode::clone(NodeFactory &factory) const {
     return factory.sin(operand->clone(factory));
 }
 
+bool SinNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
+    double a = 0, b = 0;
+    if (operand->extractLinearCoeffs(var, a, b)) {
+        if (a == 0) {  // Operand is constant.
+            coeff = 0;
+            constant = std::sin(b);
+            return true;
+        }
+    }
+    return false;
+}
+
+
 } // namespace Expression

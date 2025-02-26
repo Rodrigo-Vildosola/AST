@@ -71,7 +71,7 @@ bool extractLinearCoeffs(Node* expr, const std::string &var, double &a, double &
         b = b1 - b2;
         return ok1 || ok2;
     }
-    return false; // Cannot extract coefficients.
+    return false;
 }
 
 
@@ -129,16 +129,19 @@ Node* EqualityNode::clone(NodeFactory &factory) const {
 
 // **solveFor** 
 Node* EqualityNode::solveFor(const std::string& variable, NodeFactory &factory) const {
-    // build f(x) = left - right
+    // Create f(x) = left - right
     Node* diff = factory.sub(left->clone(factory), right->clone(factory));
-    Node* simplifiedDiff = diff->simplify(factory);
+    Node* simplifiedDiff = diff->simplify(factory);  // Simplify before extracting coefficients.
 
     double a = 0;
     double b = 0;
-    if(!extractLinearCoeffs(simplifiedDiff, variable, a, b) || a == 0) {
+
+    // Try to extract coefficients a and b where the equation is: a * x + b = 0
+    if (!simplifiedDiff->extractLinearCoeffs(variable, a, b) || a == 0) {
         Trace::addTransformation("Solving equation", simplifiedDiff->toString(), "Unable to solve linearly");
-        return simplifiedDiff->clone(factory);
+        return simplifiedDiff->clone(factory);  // Return unchanged if not solvable.
     }
+
     double solution = -b / a;
     Node* solNode = factory.num(solution);
     Trace::addTransformation("Solving equation", simplifiedDiff->toString(), solNode->toString());

@@ -65,4 +65,19 @@ Node* LogNode::clone(NodeFactory &factory) const {
     return factory.log(left->clone(factory), right->clone(factory));
 }
 
+bool LogNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
+    double a_base = 0, b_base = 0;
+    double a_operand = 0, b_operand = 0;
+    if (left->extractLinearCoeffs(var, a_base, b_base) &&
+        right->extractLinearCoeffs(var, a_operand, b_operand)) {
+        // Both must be constant for log to be constant.
+        if (a_base == 0 && a_operand == 0) {
+            coeff = 0;
+            constant = std::log(b_operand) / std::log(b_base);
+            return true;
+        }
+    }
+    return false;
+}
+
 } // namespace Expression

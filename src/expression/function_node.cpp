@@ -86,4 +86,28 @@ Node* FunctionNode::clone(NodeFactory &factory) const {
     return factory.func(name, expectedArgCount, clonedArgs, callback);
 }
 
+bool FunctionNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
+    bool allConst = true;
+    std::vector<double> argVals;
+    for (auto arg : arguments) {
+        double a = 0, b = 0;
+        if (!arg->extractLinearCoeffs(var, a, b)) {
+            allConst = false;
+            break;
+        }
+        if (a != 0) {
+            allConst = false;
+            break;
+        }
+        argVals.push_back(b);
+    }
+    if (allConst) {
+        // If all arguments are constant, the function itself is constant.
+        coeff = 0;
+        constant = callback(argVals);
+        return true;
+    }
+    return false;
+}
+
 } // namespace Expression

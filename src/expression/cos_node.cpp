@@ -61,4 +61,17 @@ Node* CosNode::clone(NodeFactory &factory) const {
     return factory.cos(operand->clone(factory));
 }
 
+bool CosNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
+    double a = 0, b = 0;
+    if (operand->extractLinearCoeffs(var, a, b)) {
+        if (a == 0) {  // Operand is constant.
+            coeff = 0;
+            constant = std::cos(b);
+            return true;
+        }
+    }
+    return false;
+}
+
+
 } // namespace Expression

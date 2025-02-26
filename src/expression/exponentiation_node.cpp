@@ -93,4 +93,23 @@ Node* ExponentiationNode::clone(NodeFactory &factory) const {
     return factory.exp(left->clone(factory), right->clone(factory));
 }
 
+bool ExponentiationNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
+    double a_exp = 0, b_exp = 0;
+    // Check if exponent is constant.
+    if (right->extractLinearCoeffs(var, a_exp, b_exp) && a_exp == 0) {
+        double expVal = b_exp;
+        if (expVal == 0) {
+            // f(x)^0 = 1, constant.
+            coeff = 0;
+            constant = 1;
+            return true;
+        }
+        if (expVal == 1) {
+            // f(x)^1 = f(x): extract linear coeff from left.
+            return left->extractLinearCoeffs(var, coeff, constant);
+        }
+    }
+    return false;
+}
+
 } // namespace Expression

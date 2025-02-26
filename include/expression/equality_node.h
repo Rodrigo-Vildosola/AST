@@ -25,6 +25,8 @@ public:
     // Equation Solving
     virtual Node* solveFor(const std::string& variable, NodeFactory &factory) const;
 
+    // virtual bool extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const override;
+
 private:
     Node* left;
     Node* right;

@@ -21,6 +21,9 @@ public:
     virtual Node* derivative(const std::string& variable, NodeFactory &factory) const override;
     virtual Node* substitute(const std::string& variable, Node* value, NodeFactory &factory) const override;
     virtual Node* clone(NodeFactory &factory) const override;
+
+    virtual bool extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const override;
+
 };
 
 } // namespace Expression

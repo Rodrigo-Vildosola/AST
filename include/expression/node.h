@@ -25,6 +25,17 @@ public:
     virtual Node* derivative(const std::string& variable, NodeFactory &factory) const = 0;
     virtual Node* substitute(const std::string& variable, Node* value, NodeFactory &factory) const = 0;
     virtual Node* clone(NodeFactory &factory) const = 0;
+
+    /**
+     * @brief Attempt to extract coefficients from the expression assuming it is linear in `var`.
+     *
+     * If the node represents an expression of the form a*x + b,
+     * then it sets coeff = a and constant = b and returns true.
+     * Otherwise, returns false.
+     */
+    virtual bool extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
+        return false;
+    }
 };
 
 } // namespace Expression

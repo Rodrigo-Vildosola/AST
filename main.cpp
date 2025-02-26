@@ -191,10 +191,10 @@ void runEvalExampleDefault() {
 
 int main() {
     try {
-        runEvalExampleArena();
-        runEvalExampleDefault();
+        // runEvalExampleArena();
+        // runEvalExampleDefault();
 
-        // runSolveExample();
+        runSolveExample();
 
         // runEvaluationExample();
         // runSimplificationExample();

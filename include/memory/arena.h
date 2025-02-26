@@ -1,93 +1,100 @@
 #ifndef ARENA_H
 #define ARENA_H
 
-#include "_pch.h"
+#include <vector>
+#include <cstdlib>
+#include <algorithm>
+#include <cstddef>
+#include <new>
+#include <iostream>
 #include "expression/node.h"
 
 namespace Expression {
 
-/**
- * @brief Arena is a "full arena" allocator for Node objects.
- * It logs memory usage and tracks allocations. 
- * ALL node creation in your AST must go through this arena's `make()` method.
- */
 class Arena {
 private:
-    std::vector<Node*> allocatedNodes;  ///< Tracks all allocated nodes
-    size_t nodeCount = 0;              ///< How many nodes allocated
-    size_t totalBytes = 0;             ///< Approx total size of allocated nodes
+    // Internal structure for a memory block.
+    struct Block {
+        char* memory;
+        size_t size;
+        size_t offset;
+
+        Block(size_t sz) : size(sz), offset(0) {
+            // Allocate the block with proper alignment.
+            memory = new char[size];
+        }
+        ~Block() {
+            delete[] memory;
+        }
+    };
+
+    std::vector<Block*> blocks;  ///< Vector of allocated blocks
+    size_t defaultBlockSize;       ///< Default size for new blocks
+    size_t nodeCount = 0;          ///< Count of allocated nodes
 
 public:
-    Arena() = default;
-    
-    // Prevent copying (ensures unique ownership)
+    // Initialize arena with a default block size.
+    explicit Arena(size_t blockSize = 4096)
+        : defaultBlockSize(blockSize) {
+        blocks.push_back(new Block(defaultBlockSize));
+    }
+
+    // Disable copying
     Arena(const Arena&) = delete;
     Arena& operator=(const Arena&) = delete;
 
-    /**
-     * @brief Destructor automatically deletes all stored nodes.
-     * Logs final stats if desired.
-     */
     ~Arena() {
-        // Optional logging
         std::cerr << "[Arena] Destroying: " 
-                  << nodeCount << " nodes, ~" << totalBytes << " bytes.\n";
-
-        // Delete all nodes
-        for (Node* node : allocatedNodes) {
-            delete node;
+                  << nodeCount << " nodes allocated.\n";
+        for (Block* block : blocks) {
+            delete block;
         }
     }
 
     /**
-     * @brief Allocate and store a new Node, logging usage stats.
+     * @brief Allocate a new Node of type T using placement new.
      * 
-     * @tparam T The concrete Node type
-     * @tparam Args Constructor parameter types
-     * @param args Parameters to forward to T's constructor
-     * @return T* A pointer to the newly allocated Node
+     * @tparam T Must be derived from Node.
+     * @tparam Args Constructor arguments for T.
+     * @return T* Pointer to the new Node.
      */
     template<typename T, typename... Args>
     T* make(Args&&... args) {
-        static_assert(std::is_base_of<Node, T>::value, 
-                      "T must inherit from Node");
+        static_assert(std::is_base_of<Node, T>::value, "T must inherit from Node");
 
-        // Create the node
-        T* node = new T(std::forward<Args>(args)...);
-        allocatedNodes.push_back(node);
+        size_t spaceNeeded = sizeof(T);
+        // Get the current block.
+        Block* currentBlock = blocks.back();
 
-        // Log basic usage stats
-        nodeCount++;
-        // This is approximate. We only account for `sizeof(T)`. 
-        // If T has internal allocations, we won't see those.
-        totalBytes += sizeof(T);
+        // Check if there's enough space, else allocate a new block.
+        if (currentBlock->offset + spaceNeeded > currentBlock->size) {
+            // Determine new block size (at least defaultBlockSize or larger if needed)
+            size_t newBlockSize = std::max(defaultBlockSize, spaceNeeded);
+            currentBlock = new Block(newBlockSize);
+            blocks.push_back(currentBlock);
+        }
 
+        // Allocate memory from the block.
+        void* mem = currentBlock->memory + currentBlock->offset;
+        currentBlock->offset += spaceNeeded;
+
+        // Construct the node using placement new.
+        T* node = new (mem) T(std::forward<Args>(args)...);
+        ++nodeCount;
         return node;
     }
 
-    /**
-     * @brief Get how many nodes have been allocated
-     */
-    size_t getNodeCount() const {
-        return nodeCount;
-    }
-
-    /**
-     * @brief Get approximate total bytes allocated in this arena.
-     */
-    size_t getTotalBytes() const {
-        return totalBytes;
-    }
-
-    /**
-     * @brief Optional debug method for printing usage stats.
-     */
+    // Optional debug method for printing usage stats.
     void printStats() const {
-        std::cout << "[Arena] Currently allocated: " 
-                  << nodeCount << " nodes, ~" << totalBytes << " bytes.\n";
+        size_t totalBytes = 0;
+        for (const Block* block : blocks)
+            totalBytes += block->size;
+        std::cout << "[Arena] Blocks: " << blocks.size() 
+                  << ", Total Memory: ~" << totalBytes 
+                  << " bytes, Nodes: " << nodeCount << std::endl;
     }
 };
 
 }  // namespace Expression
 
-#endif  // EXPR_ARENA_H
+#endif  // ARENA_H

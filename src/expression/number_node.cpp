@@ -49,4 +49,10 @@ double NumberNode::getValue() const {
     return value;
 }
 
+bool NumberNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
+    coeff = 0;
+    constant = value;
+    return true;
+}
+
 } // namespace Expression

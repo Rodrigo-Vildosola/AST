@@ -70,4 +70,16 @@ Node* SubtractionNode::clone(NodeFactory &factory) const {
     return factory.sub(left->clone(factory), right->clone(factory));
 }
 
+bool SubtractionNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
+    double a1 = 0, b1 = 0, a2 = 0, b2 = 0;
+    bool ok1 = left->extractLinearCoeffs(var, a1, b1);
+    bool ok2 = right->extractLinearCoeffs(var, a2, b2);
+    if (ok1 || ok2) {
+        coeff = a1 - a2;
+        constant = b1 - b2;
+        return true;
+    }
+    return false;
+}
+
 } // namespace Expression

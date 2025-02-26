@@ -24,6 +24,8 @@ public:
 
     double getValue() const;
 
+    virtual bool extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const override;
+
 private:
     double value;
 };

@@ -25,6 +25,8 @@ public:
 
     const std::string& getName() const { return name; }
 
+    virtual bool extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const override;
+
 private:
     std::string name;
 };

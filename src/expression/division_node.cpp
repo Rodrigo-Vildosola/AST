@@ -95,4 +95,19 @@ Node* DivisionNode::clone(NodeFactory &factory) const {
     return factory.div(left->clone(factory), right->clone(factory));
 }
 
+bool DivisionNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
+    double a_num = 0, b_num = 0;
+    double a_den = 0, b_den = 0;
+    if (left->extractLinearCoeffs(var, a_num, b_num) &&
+        right->extractLinearCoeffs(var, a_den, b_den)) {
+        // We require denominator to be constant.
+        if (a_den == 0 && b_den != 0) {
+            coeff = a_num / b_den;
+            constant = b_num / b_den;
+            return true;
+        }
+    }
+    return false;
+}
+
 } // namespace Expression
