@@ -18,7 +18,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${NLOHMANN_JSON_DIR})
 
 # Collect all source files for the static library.
-file(GLOB LIB_SOURCES "${CMAKE_SOURCE_DIR}/src/expression/*.cpp")
+file(GLOB LIB_SOURCES "${CMAKE_SOURCE_DIR}/src/*/*.cpp")
 
 # Create a static library target.
 add_library(expr_static STATIC ${LIB_SOURCES})

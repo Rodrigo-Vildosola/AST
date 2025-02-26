@@ -5,9 +5,6 @@
 
 namespace Expression {
 
-// Define the environment type to map variable names to their values.
-using Env = std::unordered_map<std::string, double>;
-
 // Variable nodes represent named values.
 // They inherit directly from Node.
 class VariableNode : public Node {
@@ -20,9 +17,6 @@ public:
 private:
     std::string name;
 };
-
-// Global environment instance used for variable lookup.
-extern Env globalEnv;
 
 } // namespace Expression
 
