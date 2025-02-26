@@ -2,13 +2,17 @@
 #include "expression/number_node.h"
 #include "expression/multiplication_node.h"
 #include "expression/cos_node.h"
+#include "helpers/node_factory.h"
+#include "tracing/trace.h"
 
 namespace Expression {
 
 SinNode::SinNode(Node* operand)
     : UnaryOpNode(operand) {}
 
-SinNode::~SinNode() {}
+SinNode::~SinNode() {
+    // no manual deletion
+}
 
 double SinNode::evaluate(const Env &env) {
     double opVal = operand->evaluate(env);
@@ -22,32 +26,38 @@ std::string SinNode::toString() const {
 }
 
 // **Simplification**
-Node* SinNode::simplify() const {
+Node* SinNode::simplify(NodeFactory &factory) const {
     std::string before = toString();
-    Node* simplified = new SinNode(operand->simplify());
-    Trace::addTransformation("Simplify SinNode", before, simplified->toString());
-    return simplified;
+    Node* simplifiedOperand = operand->simplify(factory);
+    Node* result = factory.sin(simplifiedOperand);
+    Trace::addTransformation("Simplify SinNode", before, result->toString());
+    return result;
 }
 
-// **Differentiation (d/dx sin(x) = cos(x) * dx)**
-Node* SinNode::derivative(const std::string& variable) const {
+// **Differentiation (d/dx sin(x) = cos(x)*dx)**
+Node* SinNode::derivative(const std::string& variable, NodeFactory &factory) const {
     std::string before = toString();
-    Node* derivativeResult = new MultiplicationNode(new CosNode(operand->clone()), operand->derivative(variable));
+    // cos(operand)* operand->derivative(variable)
+    Node* cosTerm = factory.cos(operand->clone(factory));
+    Node* opDeriv = operand->derivative(variable, factory);
+    Node* derivativeResult = factory.mul(cosTerm, opDeriv);
+
     Trace::addTransformation("Differentiate SinNode", before, derivativeResult->toString());
     return derivativeResult;
 }
 
 // **Substitution**
-Node* SinNode::substitute(const std::string& variable, Node* value) const {
+Node* SinNode::substitute(const std::string& variable, Node* value, NodeFactory &factory) const {
     std::string before = toString();
-    Node* substituted = new SinNode(operand->substitute(variable, value));
-    Trace::addTransformation("Substituting in SinNode", before, substituted->toString());
-    return substituted;
+    Node* newOperand = operand->substitute(variable, value, factory);
+    Node* result = factory.sin(newOperand);
+    Trace::addTransformation("Substituting in SinNode", before, result->toString());
+    return result;
 }
 
 // **Clone**
-Node* SinNode::clone() const {
-    return new SinNode(operand->clone());
+Node* SinNode::clone(NodeFactory &factory) const {
+    return factory.sin(operand->clone(factory));
 }
 
 } // namespace Expression

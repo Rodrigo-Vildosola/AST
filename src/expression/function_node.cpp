@@ -1,32 +1,32 @@
 #include "expression/function_node.h"
+#include "helpers/node_factory.h"
 #include "tracing/trace.h"
 
 namespace Expression {
 
 FunctionNode::FunctionNode(const std::string& name, int expectedArgCount, const std::vector<Node*>& arguments, FunctionCallback callback)
-    : name(name), expectedArgCount(expectedArgCount), arguments(arguments), callback(callback) {
-    if (arguments.size() != static_cast<size_t>(expectedArgCount)) {
-         throw std::runtime_error("Function " + name + " expects " + std::to_string(expectedArgCount) +
-                                  " arguments, but got " + std::to_string(arguments.size()));
+    : name(name), expectedArgCount(expectedArgCount), arguments(arguments), callback(callback)
+{
+    if (arguments.size() != (size_t)expectedArgCount) {
+        throw std::runtime_error("Function " + name + " expects " + std::to_string(expectedArgCount) +
+                                 " arguments, but got " + std::to_string(arguments.size()));
     }
 }
 
 FunctionNode::~FunctionNode() {
-    // for (auto arg : arguments) {
-    //     delete arg;
-    // }
+    // no manual delete in full arena
 }
 
 double FunctionNode::evaluate(const Env &env) {
-    if (arguments.size() != static_cast<size_t>(expectedArgCount)) {
-         throw std::runtime_error("Function " + name + " expects " + std::to_string(expectedArgCount) +
-                                  " arguments, but got " + std::to_string(arguments.size()));
+    if (arguments.size() != (size_t)expectedArgCount) {
+        throw std::runtime_error("Function " + name + " expects " + std::to_string(expectedArgCount) +
+                                 " arguments, but got " + std::to_string(arguments.size()));
     }
-    std::vector<double> argValues;
+    std::vector<double> argVals;
     for (auto arg : arguments) {
-        argValues.push_back(arg->evaluate(env));
+        argVals.push_back(arg->evaluate(env));
     }
-    double result = callback(argValues);
+    double result = callback(argVals);
     Trace::addTransformation("Evaluating FunctionNode: " + name, toString(), std::to_string(result));
     return result;
 }
@@ -34,45 +34,52 @@ double FunctionNode::evaluate(const Env &env) {
 std::string FunctionNode::toString() const {
     std::ostringstream oss;
     oss << name << "(";
-    bool first = true;
-    for (auto arg : arguments) {
-        if (!first) {
-            oss << ", ";
-        }
-        oss << arg->toString();
-        first = false;
+    for (size_t i = 0; i < arguments.size(); ++i) {
+        if (i > 0) oss << ", ";
+        oss << arguments[i]->toString();
     }
     oss << ")";
     return oss.str();
 }
 
-// **Simplification**
-Node* FunctionNode::simplify() const {
-    std::vector<Node*> simplifiedArgs;
+// **Simplify** 
+Node* FunctionNode::simplify(NodeFactory &factory) const {
+    std::vector<Node*> newArgs;
+    newArgs.reserve(arguments.size());
     for (auto arg : arguments) {
-        simplifiedArgs.push_back(arg->simplify());
+        newArgs.push_back(arg->simplify(factory));
     }
-    return new FunctionNode(name, expectedArgCount, simplifiedArgs, callback);
+    // create a new FunctionNode with simplified args
+    // or you might do factory.func(...)
+    Node* simplified = factory.func(name, expectedArgCount, newArgs, callback);
+    return simplified;
 }
 
-// **Derivative (not implemented, requires function definitions)**
-Node* FunctionNode::derivative(const std::string& variable) const {
-    Trace::addTransformation("Derivative of function " + name + " is not implemented", toString(), "Unchanged");
-    return clone();
+// **Derivative** - not yet implemented
+Node* FunctionNode::derivative(const std::string& variable, NodeFactory &factory) const {
+    Trace::addTransformation("Derivative of function " + name, toString(), "Unchanged");
+    return clone(factory);
 }
 
 // **Substitution**
-Node* FunctionNode::substitute(const std::string& variable, Node* value) const {
-    std::vector<Node*> substitutedArgs;
+Node* FunctionNode::substitute(const std::string& variable, Node* value, NodeFactory &factory) const {
+    std::vector<Node*> newArgs;
+    newArgs.reserve(arguments.size());
     for (auto arg : arguments) {
-        substitutedArgs.push_back(arg->substitute(variable, value));
+        newArgs.push_back(arg->substitute(variable, value, factory));
     }
-    return new FunctionNode(name, expectedArgCount, substitutedArgs, callback);
+    return factory.func(name, expectedArgCount, newArgs, callback);
 }
 
 // **Clone**
-Node* FunctionNode::clone() const {
-    return new FunctionNode(name, expectedArgCount, arguments, callback);
+Node* FunctionNode::clone(NodeFactory &factory) const {
+    // clone each argument
+    std::vector<Node*> clonedArgs;
+    clonedArgs.reserve(arguments.size());
+    for (auto arg : arguments) {
+        clonedArgs.push_back(arg->clone(factory));
+    }
+    return factory.func(name, expectedArgCount, clonedArgs, callback);
 }
 
 } // namespace Expression

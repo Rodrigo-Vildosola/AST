@@ -4,7 +4,7 @@
 #include "expression/multiplication_node.h"
 #include "expression/variable_node.h"
 #include "expression/number_node.h"
-
+#include "helpers/node_factory.h"
 #include "tracing/trace.h"
 
 namespace Expression {
@@ -86,8 +86,8 @@ EqualityNode::~EqualityNode() {
 double EqualityNode::evaluate(const Env &env) {
     double leftVal = left->evaluate(env);
     double rightVal = right->evaluate(env);
-    bool equal = std::fabs(leftVal - rightVal) < 1e-9; // Small tolerance
-    Trace::addTransformation("Evaluating EqualityNode", left->toString() + " == " + right->toString(), equal ? "true" : "false");
+    bool equal = (std::fabs(leftVal - rightVal) < 1e-9);
+    Trace::addTransformation("Evaluating EqualityNode", toString(), equal ? "true" : "false");
     return equal ? 1.0 : 0.0;
 }
 
@@ -95,50 +95,50 @@ std::string EqualityNode::toString() const {
     return "(" + left->toString() + " == " + right->toString() + ")";
 }
 
-// **Simplify: Remove unnecessary expressions**
-Node* EqualityNode::simplify() const {
-    Node* leftSimplified = left->simplify();
-    Node* rightSimplified = right->simplify();
-    
-    if (leftSimplified->toString() == rightSimplified->toString()) {
+// **Simplify** 
+Node* EqualityNode::simplify(NodeFactory &factory) const {
+    Node* leftS = left->simplify(factory);
+    Node* rightS = right->simplify(factory);
+    if (leftS->toString() == rightS->toString()) {
         Trace::addTransformation("Simplify EqualityNode", toString(), "true");
-        return new NumberNode(1);
+        return factory.num(1);
     }
-    return new EqualityNode(leftSimplified, rightSimplified);
+    return factory.eq(leftS, rightS);
 }
 
-// **Derivative: The derivative of an equation is just the difference**
-Node* EqualityNode::derivative(const std::string& variable) const {
-    return new EqualityNode(left->derivative(variable), right->derivative(variable));
+// **Derivative** d/dx of an equation is just derivative of each side
+Node* EqualityNode::derivative(const std::string& variable, NodeFactory &factory) const {
+    Node* leftD = left->derivative(variable, factory);
+    Node* rightD = right->derivative(variable, factory);
+    return factory.eq(leftD, rightD);
 }
 
 // **Substitute variable with a value/expression**
-Node* EqualityNode::substitute(const std::string& variable, Node* value) const {
-    return new EqualityNode(left->substitute(variable, value), right->substitute(variable, value));
+Node* EqualityNode::substitute(const std::string& variable, Node* value, NodeFactory &factory) const {
+    Node* leftSub = left->substitute(variable, value, factory);
+    Node* rightSub = right->substitute(variable, value, factory);
+    return factory.eq(leftSub, rightSub);
 }
 
-// **Clone the equality node**
-Node* EqualityNode::clone() const {
-    return new EqualityNode(left->clone(), right->clone());
+// **Clone**
+Node* EqualityNode::clone(NodeFactory &factory) const {
+    return factory.eq(left->clone(factory), right->clone(factory));
 }
 
-// **Solve for a given variable (simple rearrangement)**
-Node* EqualityNode::solveFor(const std::string& variable) const {
-    // Form the equation f(x) = 0 by subtracting right from left.
-    Node* diff = new SubtractionNode(left->clone(), right->clone());
-    Node* simplifiedDiff = diff->simplify();
-    delete diff;  // we no longer need the unsimplified difference
+// **solveFor** 
+Node* EqualityNode::solveFor(const std::string& variable, NodeFactory &factory) const {
+    // build f(x) = left - right
+    Node* diff = factory.sub(left->clone(factory), right->clone(factory));
+    Node* simplifiedDiff = diff->simplify(factory);
 
     double a = 0;
     double b = 0;
     if(!extractLinearCoeffs(simplifiedDiff, variable, a, b) || a == 0) {
-        // Could not extract a linear form or a is 0.
         Trace::addTransformation("Solving equation", simplifiedDiff->toString(), "Unable to solve linearly");
-        return simplifiedDiff->clone();  // or return nullptr, depending on design.
+        return simplifiedDiff->clone(factory);
     }
-
     double solution = -b / a;
-    Node* solNode = new NumberNode(solution);
+    Node* solNode = factory.num(solution);
     Trace::addTransformation("Solving equation", simplifiedDiff->toString(), solNode->toString());
     return solNode;
 }

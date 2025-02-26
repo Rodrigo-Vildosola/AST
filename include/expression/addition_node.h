@@ -6,7 +6,7 @@
 
 namespace Expression {
 
-class NodeFactory; // forward declaration
+class NodeFactory;
 
 // Represents addition: left + right.
 class AdditionNode : public BinaryOpNode {

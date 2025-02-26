@@ -1,5 +1,7 @@
 #include "expression/ln_node.h"
 #include "expression/division_node.h"
+#include "expression/number_node.h"
+#include "helpers/node_factory.h"
 #include "tracing/trace.h"
 
 namespace Expression {
@@ -7,16 +9,16 @@ namespace Expression {
 LnNode::LnNode(Node* operand)
     : UnaryOpNode(operand) {}
 
-LnNode::~LnNode() {}
+LnNode::~LnNode() {
+    // no child delete
+}
 
 double LnNode::evaluate(const Env &env) {
-    double operandVal = operand->evaluate(env);
-
-    if (operandVal <= 0) {
+    double opVal = operand->evaluate(env);
+    if (opVal <= 0) {
         throw std::runtime_error("Math error: ln of non-positive number.");
     }
-
-    double result = std::log(operandVal);
+    double result = std::log(opVal);
     Trace::addTransformation("Evaluating LnNode", toString(), std::to_string(result));
     return result;
 }
@@ -25,34 +27,36 @@ std::string LnNode::toString() const {
     return "ln(" + operand->toString() + ")";
 }
 
-// **Symbolic Simplification**
-Node* LnNode::simplify() const {
-    Node* simplifiedOperand = operand->simplify();
+// **Simplify**
+Node* LnNode::simplify(NodeFactory &factory) const {
+    Node* simplifiedOperand = operand->simplify(factory);
 
     // ln(1) = 0
     if (auto numNode = dynamic_cast<NumberNode*>(simplifiedOperand)) {
         if (numNode->getValue() == 1) {
-            return new NumberNode(0);
+            return factory.num(0);
         }
     }
-
-    return new LnNode(simplifiedOperand);
+    return factory.ln(simplifiedOperand);
 }
 
-// **Symbolic Differentiation**
-Node* LnNode::derivative(const std::string& variable) const {
+// **Derivative**
+Node* LnNode::derivative(const std::string& variable, NodeFactory &factory) const {
     // d/dx ln(x) = 1/x
-    return new DivisionNode(new NumberNode(1), operand->clone());
+    Node* one = factory.num(1);
+    Node* clonedOperand = operand->clone(factory);
+    return factory.div(one, clonedOperand);
 }
 
-// **Symbolic Substitution**
-Node* LnNode::substitute(const std::string& variable, Node* value) const {
-    return new LnNode(operand->substitute(variable, value));
+// **Substitution**
+Node* LnNode::substitute(const std::string& variable, Node* value, NodeFactory &factory) const {
+    Node* newOperand = operand->substitute(variable, value, factory);
+    return factory.ln(newOperand);
 }
 
 // **Clone**
-Node* LnNode::clone() const {
-    return new LnNode(operand->clone());
+Node* LnNode::clone(NodeFactory &factory) const {
+    return factory.ln(operand->clone(factory));
 }
 
 } // namespace Expression

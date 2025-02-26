@@ -27,7 +27,7 @@ void runSolveExample() {
         arena.printStats();
 
         if (EqualityNode* eq = dynamic_cast<EqualityNode*>(equation)) {
-            Node* solution = eq->solveFor("x");
+            Node* solution = eq->solveFor("x", e);
 
             std::cout << "Equation: " << equation->toString() << std::endl;
             std::cout << "Solution for x: " << solution->toString() << std::endl;
@@ -93,7 +93,7 @@ void runSimplificationExample() {
             )
         );
 
-        Node* simplified = expr->simplify();
+        Node* simplified = expr->simplify(e);
 
         std::cout << "Original Expression: " << expr->toString() << std::endl;
         std::cout << "Simplified Expression: " << simplified->toString() << std::endl;
@@ -117,10 +117,10 @@ void runDifferentiationExample() {
             e.sin(e.var("x"))
         );
 
-        Node* derivative = expr->derivative("x");
+        Node* derivative = expr->derivative("x", e);
 
         std::cout << "Original Expression: " << expr->toString() << std::endl;
-        std::cout << "Derivative: " << derivative->simplify()->toString() << std::endl;
+        std::cout << "Derivative: " << derivative->simplify(e)->toString() << std::endl;
 
     } catch (const std::exception &e) {
         std::cerr << "Error during differentiation: " << e.what() << std::endl;
@@ -131,9 +131,9 @@ int main() {
     try {
         runSolveExample();
 
-        // runEvaluationExample();
-        // runSimplificationExample();
-        // runDifferentiationExample();
+        runEvaluationExample();
+        runSimplificationExample();
+        runDifferentiationExample();
     } catch (const std::exception &e) {
         std::cerr << "Unexpected error in main: " << e.what() << std::endl;
     }

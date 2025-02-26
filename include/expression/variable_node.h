@@ -2,8 +2,11 @@
 #define VARIABLE_NODE_H
 
 #include "node.h"
+#include <string>
 
 namespace Expression {
+
+class NodeFactory;
 
 // Variable nodes represent named values.
 class VariableNode : public Node {
@@ -14,11 +17,13 @@ public:
     virtual double evaluate(const Env &env) override;
     virtual std::string toString() const override;
 
-    // **New symbolic methods**
-    virtual Node* simplify() const override;
-    virtual Node* derivative(const std::string& variable) const override;
-    virtual Node* substitute(const std::string& variable, Node* value) const override;
-    virtual Node* clone() const override;
+    // Full Arena approach
+    virtual Node* simplify(NodeFactory &factory) const override;
+    virtual Node* derivative(const std::string& variable, NodeFactory &factory) const override;
+    virtual Node* substitute(const std::string& variable, Node* value, NodeFactory &factory) const override;
+    virtual Node* clone(NodeFactory &factory) const override;
+
+    const std::string& getName() const { return name; }
 
 private:
     std::string name;

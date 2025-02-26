@@ -2,6 +2,8 @@
 #include "expression/ln_node.h"
 #include "expression/division_node.h"
 #include "expression/multiplication_node.h"
+#include "expression/number_node.h"
+#include "helpers/node_factory.h"
 #include "tracing/trace.h"
 
 namespace Expression {
@@ -9,7 +11,9 @@ namespace Expression {
 LogNode::LogNode(Node* base, Node* operand)
     : BinaryOpNode(base, operand) {}
 
-LogNode::~LogNode() {}
+LogNode::~LogNode() {
+    // no child delete
+}
 
 double LogNode::evaluate(const Env &env) {
     double baseVal = left->evaluate(env);
@@ -18,7 +22,6 @@ double LogNode::evaluate(const Env &env) {
     if (baseVal <= 0 || baseVal == 1 || operandVal <= 0) {
         throw std::runtime_error("Math error: log with invalid base or operand.");
     }
-
     double result = std::log(operandVal) / std::log(baseVal);
     Trace::addTransformation("Evaluating LogNode", toString(), std::to_string(result));
     return result;
@@ -28,36 +31,40 @@ std::string LogNode::toString() const {
     return "log(" + left->toString() + ", " + right->toString() + ")";
 }
 
-// **Symbolic Simplification**
-Node* LogNode::simplify() const {
-    Node* baseSimplified = left->simplify();
-    Node* operandSimplified = right->simplify();
+// **Simplify**
+Node* LogNode::simplify(NodeFactory &factory) const {
+    Node* baseS = left->simplify(factory);
+    Node* operandS = right->simplify(factory);
 
     // log_b(b) = 1
-    if (baseSimplified->toString() == operandSimplified->toString()) {
-        return new NumberNode(1);
+    if (baseS->toString() == operandS->toString()) {
+        return factory.num(1);
     }
 
-    return new LogNode(baseSimplified, operandSimplified);
+    return factory.log(baseS, operandS);
 }
 
-// **Symbolic Differentiation**
-Node* LogNode::derivative(const std::string& variable) const {
+// **Derivative**
+Node* LogNode::derivative(const std::string& variable, NodeFactory &factory) const {
     // d/dx log_b(x) = 1 / (x ln(b))
-    return new DivisionNode(
-        new NumberNode(1),
-        new MultiplicationNode(right->clone(), new LnNode(left->clone()))
-    );
+    Node* clonedOperand = right->clone(factory);
+    Node* lnBase = factory.ln(left->clone(factory));
+    Node* denominator = factory.mul(clonedOperand, lnBase);
+
+    Node* one = factory.num(1);
+    return factory.div(one, denominator);
 }
 
-// **Symbolic Substitution**
-Node* LogNode::substitute(const std::string& variable, Node* value) const {
-    return new LogNode(left->substitute(variable, value), right->substitute(variable, value));
+// **Substitute**
+Node* LogNode::substitute(const std::string& variable, Node* value, NodeFactory &factory) const {
+    Node* newBase = left->substitute(variable, value, factory);
+    Node* newOperand = right->substitute(variable, value, factory);
+    return factory.log(newBase, newOperand);
 }
 
 // **Clone**
-Node* LogNode::clone() const {
-    return new LogNode(left->clone(), right->clone());
+Node* LogNode::clone(NodeFactory &factory) const {
+    return factory.log(left->clone(factory), right->clone(factory));
 }
 
 } // namespace Expression

@@ -5,6 +5,8 @@
 
 namespace Expression {
 
+class NodeFactory;
+
 // EqualityNode represents an equation (e.g., A == B).
 class EqualityNode : public Node {
 public:
@@ -14,14 +16,14 @@ public:
     virtual double evaluate(const Env &env) override;
     virtual std::string toString() const override;
 
-    // **New symbolic methods**
-    virtual Node* simplify() const override;
-    virtual Node* derivative(const std::string& variable) const override;
-    virtual Node* substitute(const std::string& variable, Node* value) const override;
-    virtual Node* clone() const override;
-    
-    // **Equation Solving**
-    virtual Node* solveFor(const std::string& variable) const;
+    // Full Arena
+    virtual Node* simplify(NodeFactory &factory) const override;
+    virtual Node* derivative(const std::string& variable, NodeFactory &factory) const override;
+    virtual Node* substitute(const std::string& variable, Node* value, NodeFactory &factory) const override;
+    virtual Node* clone(NodeFactory &factory) const override;
+
+    // Equation Solving
+    virtual Node* solveFor(const std::string& variable, NodeFactory &factory) const;
 
 private:
     Node* left;

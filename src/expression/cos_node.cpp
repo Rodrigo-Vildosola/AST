@@ -2,13 +2,17 @@
 #include "expression/number_node.h"
 #include "expression/multiplication_node.h"
 #include "expression/sin_node.h"
+#include "helpers/node_factory.h"  // NodeFactory
+#include "tracing/trace.h"
 
 namespace Expression {
 
 CosNode::CosNode(Node* operand)
     : UnaryOpNode(operand) {}
 
-CosNode::~CosNode() {}
+CosNode::~CosNode() {
+    // no manual delete if using full arena
+}
 
 double CosNode::evaluate(const Env &env) {
     double opVal = operand->evaluate(env);
@@ -21,36 +25,42 @@ std::string CosNode::toString() const {
     return "cos(" + operand->toString() + ")";
 }
 
-// **Simplification**
-Node* CosNode::simplify() const {
+// **Simplification (Full Arena)**
+Node* CosNode::simplify(NodeFactory &factory) const {
     std::string before = toString();
-    Node* simplified = new CosNode(operand->simplify());
-    Trace::addTransformation("Simplify CosNode", before, simplified->toString());
-    return simplified;
+    Node* simplifiedOperand = operand->simplify(factory);
+    Node* result = factory.cos(simplifiedOperand);
+    Trace::addTransformation("Simplify CosNode", before, result->toString());
+    return result;
 }
 
-// **Differentiation (d/dx cos(x) = -sin(x) * dx)**
-Node* CosNode::derivative(const std::string& variable) const {
+// **Differentiation** d/dx cos(x) = -sin(x) * dx
+Node* CosNode::derivative(const std::string& variable, NodeFactory &factory) const {
     std::string before = toString();
-    Node* derivativeResult = new MultiplicationNode(
-        new NumberNode(-1), // Negative sign from differentiation
-        new MultiplicationNode(new SinNode(operand->clone()), operand->derivative(variable))
-    );
+    // -sin(operand) * operand->derivative
+    Node* negativeOne = factory.num(-1);
+    Node* sinTerm = factory.sin(operand->clone(factory));
+    Node* derivTerm = operand->derivative(variable, factory);
+    // multiply them: (-1) * ( sin(...) * deriv(...) )
+    Node* mulInner = factory.mul(sinTerm, derivTerm);
+    Node* derivativeResult = factory.mul(negativeOne, mulInner);
+
     Trace::addTransformation("Differentiate CosNode", before, derivativeResult->toString());
     return derivativeResult;
 }
 
 // **Substitution**
-Node* CosNode::substitute(const std::string& variable, Node* value) const {
+Node* CosNode::substitute(const std::string& variable, Node* value, NodeFactory &factory) const {
     std::string before = toString();
-    Node* substituted = new CosNode(operand->substitute(variable, value));
-    Trace::addTransformation("Substituting in CosNode", before, substituted->toString());
-    return substituted;
+    Node* substitutedOperand = operand->substitute(variable, value, factory);
+    Node* result = factory.cos(substitutedOperand);
+    Trace::addTransformation("Substituting in CosNode", before, result->toString());
+    return result;
 }
 
 // **Clone**
-Node* CosNode::clone() const {
-    return new CosNode(operand->clone());
+Node* CosNode::clone(NodeFactory &factory) const {
+    return factory.cos(operand->clone(factory));
 }
 
 } // namespace Expression

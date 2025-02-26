@@ -3,11 +3,12 @@
 
 #include "_pch.h"
 #include "tracing/trace.h"
-#include "helpers/node_factory.h"
 
 namespace Expression {
 
 using Env = std::unordered_map<std::string, double>;
+
+class NodeFactory;
 
 // Abstract base class for all expression nodes.
 class Node {
