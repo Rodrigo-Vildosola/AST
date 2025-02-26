@@ -10,9 +10,10 @@ class BinaryOpNode : public Node {
 public:
     BinaryOpNode(Node* left, Node* right);
     virtual ~BinaryOpNode();
-protected:
+
     Node* left;
     Node* right;
+protected:
 };
 
 } // namespace Expression

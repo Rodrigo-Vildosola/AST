@@ -9,6 +9,36 @@
 
 using namespace Expression;
 
+void runSolveExample() {
+    Trace::clear();
+    std::cout << "\n=== Solve Equation Example ===\n";
+
+    try {
+        ExprArena arena;
+        ExprHelper e(arena);
+
+        // Create a simple equation: x == 3
+        // (This means: the expression is an equality node with left side 'x' and right side '3')
+        Node* equation = e.eq(
+            e.add(e.mul(e.num(2), e.var("x")), e.num(5)),  // Left: (2 * x) + 5
+            e.num(11)                                      // Right: 11
+        );
+
+        if (EqualityNode* eq = dynamic_cast<EqualityNode*>(equation)) {
+            Node* solution = eq->solveFor("x");
+
+            std::cout << "Equation: " << equation->toString() << std::endl;
+            std::cout << "Solution for x: " << solution->toString() << std::endl;
+        } else {
+            throw std::runtime_error("Not an equation");
+        }
+        // Note: Do not manually delete 'equation' or 'solution' when using the arena allocator.
+        // The arena will take care of deallocation when it goes out of scope.
+    } catch (const std::exception &e) {
+        std::cerr << "Error during solving: " << e.what() << std::endl;
+    }
+}
+
 void runEvaluationExample() {
     Trace::clear();
     std::cout << "\n=== Evaluation Example ===\n";
@@ -97,9 +127,11 @@ void runDifferentiationExample() {
 
 int main() {
     try {
-        runEvaluationExample();
-        runSimplificationExample();
-        runDifferentiationExample();
+        runSolveExample();
+
+        // runEvaluationExample();
+        // runSimplificationExample();
+        // runDifferentiationExample();
     } catch (const std::exception &e) {
         std::cerr << "Unexpected error in main: " << e.what() << std::endl;
     }
