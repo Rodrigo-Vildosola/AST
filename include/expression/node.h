@@ -3,6 +3,7 @@
 
 #include "_pch.h"
 #include "tracing/trace.h"
+#include "helpers/node_factory.h"
 
 namespace Expression {
 
@@ -18,10 +19,10 @@ public:
     virtual std::string toString() const = 0;
 
     // **NEW METHODS FOR SYMBOLIC COMPUTATION**
-    virtual Node* simplify() const = 0;  // Simplify the expression if possible.
-    virtual Node* derivative(const std::string& variable) const = 0;  // Compute derivative w.r.t a variable.
-    virtual Node* substitute(const std::string& variable, Node* value) const = 0;  // Substitute a variable with an expression.
-    virtual Node* clone() const = 0;  // Deep copy of this node.
+    virtual Node* simplify(NodeFactory &e) const = 0;
+    virtual Node* derivative(const std::string& variable, NodeFactory &factory) const = 0;
+    virtual Node* substitute(const std::string& variable, Node* value, NodeFactory &factory) const = 0;
+    virtual Node* clone(NodeFactory &factory) const = 0;
 };
 
 } // namespace Expression

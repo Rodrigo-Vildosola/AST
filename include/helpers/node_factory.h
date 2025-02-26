@@ -1,5 +1,5 @@
-#ifndef EXPR_HELPER_H
-#define EXPR_HELPER_H
+#ifndef NODE_FACTORY_H
+#define NODE_FACTORY_H
 
 #include "expression/number_node.h"
 #include "expression/addition_node.h"
@@ -18,12 +18,16 @@
 
 namespace Expression {
 
-class ExprHelper {
+/**
+ * @brief NodeFactory provides concise methods for creating Node types
+ *        via an ExprArena (Full Arena approach).
+ */
+class NodeFactory {
 private:
     ExprArena& arena;  // Reference to memory arena
 
 public:
-    explicit ExprHelper(ExprArena& a) : arena(a) {}
+    explicit NodeFactory(ExprArena& a) : arena(a) {}
 
     // Number & Variable Nodes
     Node* num(double value) { return arena.make<NumberNode>(value); }
@@ -52,4 +56,4 @@ public:
 
 }  // namespace Expression
 
-#endif  // EXPR_HELPER_H
+#endif  // NODE_FACTORY_H

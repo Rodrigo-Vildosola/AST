@@ -1,5 +1,6 @@
 #include "expression/addition_node.h"
 #include "expression/number_node.h"
+#include "helpers/node_factory.h"
 #include "tracing/trace.h"
 
 namespace Expression {
@@ -7,7 +8,9 @@ namespace Expression {
 AdditionNode::AdditionNode(Node* left, Node* right)
     : BinaryOpNode(left, right) {}
 
-AdditionNode::~AdditionNode() {}
+AdditionNode::~AdditionNode() {
+    // No child deletes if using full arena
+}
 
 double AdditionNode::evaluate(const Env &env) {
     double leftVal = left->evaluate(env);
@@ -21,22 +24,21 @@ std::string AdditionNode::toString() const {
     return "(" + left->toString() + " + " + right->toString() + ")";
 }
 
-// **Symbolic Simplification**
-Node* AdditionNode::simplify() const {
-    Node* leftSimplified = left->simplify();
-    Node* rightSimplified = right->simplify();
+// **Symbolic Simplification (Full Arena)**
+Node* AdditionNode::simplify(NodeFactory &factory) const {
+    Node* leftSimplified = left->simplify(factory);
+    Node* rightSimplified = right->simplify(factory);
 
     std::string before = toString();
 
-    // If both sides are numbers, perform constant folding.
+    // If both sides are numbers, perform constant folding
     if (auto leftNum = dynamic_cast<NumberNode*>(leftSimplified)) {
         if (auto rightNum = dynamic_cast<NumberNode*>(rightSimplified)) {
-            Node* simplified = new NumberNode(leftNum->getValue() + rightNum->getValue());
-            Trace::addTransformation("Constant folding in AdditionNode", before, simplified->toString());
-            return simplified;
+            Node* result = factory.num(leftNum->getValue() + rightNum->getValue());
+            Trace::addTransformation("Constant folding in AdditionNode", before, result->toString());
+            return result;
         }
     }
-
     // Identity rule: x + 0 = x
     if (auto rightNum = dynamic_cast<NumberNode*>(rightSimplified)) {
         if (rightNum->getValue() == 0) {
@@ -44,38 +46,42 @@ Node* AdditionNode::simplify() const {
             return leftSimplified;
         }
     }
-
     if (auto leftNum = dynamic_cast<NumberNode*>(leftSimplified)) {
         if (leftNum->getValue() == 0) {
             Trace::addTransformation("Simplify AdditionNode", before, rightSimplified->toString());
             return rightSimplified;
         }
     }
-
-    Node* simplified = new AdditionNode(leftSimplified, rightSimplified);
-    Trace::addTransformation("Simplify AdditionNode", before, simplified->toString());
-    return simplified;
+    Node* result = factory.add(leftSimplified, rightSimplified);
+    Trace::addTransformation("Simplify AdditionNode", before, result->toString());
+    return result;
 }
 
 // **Symbolic Differentiation**
-Node* AdditionNode::derivative(const std::string& variable) const {
+Node* AdditionNode::derivative(const std::string& variable, NodeFactory &factory) const {
     std::string before = toString();
-    Node* derivativeResult = new AdditionNode(left->derivative(variable), right->derivative(variable));
-    Trace::addTransformation("Differentiate AdditionNode", before, derivativeResult->toString());
-    return derivativeResult;
+    Node* derivedLeft = left->derivative(variable, factory);
+    Node* derivedRight = right->derivative(variable, factory);
+    Node* result = factory.add(derivedLeft, derivedRight);
+    Trace::addTransformation("Differentiate AdditionNode", before, result->toString());
+    return result;
 }
 
 // **Symbolic Substitution**
-Node* AdditionNode::substitute(const std::string& variable, Node* value) const {
+Node* AdditionNode::substitute(const std::string& variable, Node* value, NodeFactory &factory) const {
     std::string before = toString();
-    Node* substituted = new AdditionNode(left->substitute(variable, value), right->substitute(variable, value));
+    Node* newLeft = left->substitute(variable, value, factory);
+    Node* newRight = right->substitute(variable, value, factory);
+    Node* substituted = factory.add(newLeft, newRight);
     Trace::addTransformation("Substituting in AdditionNode", before, substituted->toString());
     return substituted;
 }
 
 // **Clone**
-Node* AdditionNode::clone() const {
-    return new AdditionNode(left->clone(), right->clone());
+Node* AdditionNode::clone(NodeFactory &factory) const {
+    Node* clonedLeft = left->clone(factory);
+    Node* clonedRight = right->clone(factory);
+    return factory.add(clonedLeft, clonedRight);
 }
 
 } // namespace Expression

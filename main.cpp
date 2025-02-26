@@ -3,7 +3,7 @@
 #include <vector>
 #include <stdexcept>
 #include "memory/expr_arena.h"
-#include "helpers/expr_helper.h"
+#include "helpers/node_factory.h"
 
 #include "tracing/trace.h"
 
@@ -15,7 +15,7 @@ void runSolveExample() {
 
     try {
         ExprArena arena;
-        ExprHelper e(arena);
+        NodeFactory e(arena);
 
         // Create a simple equation: x == 3
         // (This means: the expression is an equality node with left side 'x' and right side '3')
@@ -23,6 +23,8 @@ void runSolveExample() {
             e.add(e.mul(e.num(2), e.var("x")), e.num(5)),  // Left: (2 * x) + 5
             e.num(11)                                      // Right: 11
         );
+
+        arena.printStats();
 
         if (EqualityNode* eq = dynamic_cast<EqualityNode*>(equation)) {
             Node* solution = eq->solveFor("x");
@@ -45,7 +47,7 @@ void runEvaluationExample() {
 
     try {
         ExprArena arena;
-        ExprHelper e(arena);
+        NodeFactory e(arena);
 
         // Define the variable environment.
         Env env;
@@ -77,7 +79,7 @@ void runSimplificationExample() {
 
     try {
         ExprArena arena;
-        ExprHelper e(arena);
+        NodeFactory e(arena);
 
         // Expression: ((x + 0) * (1 * y)) / (x^0 + y^1)
         Node* expr = e.div(
@@ -107,7 +109,7 @@ void runDifferentiationExample() {
 
     try {
         ExprArena arena;
-        ExprHelper e(arena);
+        NodeFactory e(arena);
 
         // Expression: d/dx (x^2 * sin(x))
         Node* expr = e.mul(

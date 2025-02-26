@@ -10,8 +10,9 @@ class UnaryOpNode : public Node {
 public:
     explicit UnaryOpNode(Node* operand);
     virtual ~UnaryOpNode();
-protected:
+
     Node* operand;
+protected:
 };
 
 } // namespace Expression
