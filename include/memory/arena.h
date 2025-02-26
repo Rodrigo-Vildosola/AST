@@ -1,5 +1,5 @@
-#ifndef EXPR_ARENA_H
-#define EXPR_ARENA_H
+#ifndef ARENA_H
+#define ARENA_H
 
 #include "_pch.h"
 #include "expression/node.h"
@@ -7,30 +7,30 @@
 namespace Expression {
 
 /**
- * @brief ExprArena is a "full arena" allocator for Node objects.
+ * @brief Arena is a "full arena" allocator for Node objects.
  * It logs memory usage and tracks allocations. 
  * ALL node creation in your AST must go through this arena's `make()` method.
  */
-class ExprArena {
+class Arena {
 private:
     std::vector<Node*> allocatedNodes;  ///< Tracks all allocated nodes
     size_t nodeCount = 0;              ///< How many nodes allocated
     size_t totalBytes = 0;             ///< Approx total size of allocated nodes
 
 public:
-    ExprArena() = default;
+    Arena() = default;
     
     // Prevent copying (ensures unique ownership)
-    ExprArena(const ExprArena&) = delete;
-    ExprArena& operator=(const ExprArena&) = delete;
+    Arena(const Arena&) = delete;
+    Arena& operator=(const Arena&) = delete;
 
     /**
      * @brief Destructor automatically deletes all stored nodes.
      * Logs final stats if desired.
      */
-    ~ExprArena() {
+    ~Arena() {
         // Optional logging
-        std::cerr << "[ExprArena] Destroying: " 
+        std::cerr << "[Arena] Destroying: " 
                   << nodeCount << " nodes, ~" << totalBytes << " bytes.\n";
 
         // Delete all nodes
@@ -83,7 +83,7 @@ public:
      * @brief Optional debug method for printing usage stats.
      */
     void printStats() const {
-        std::cout << "[ExprArena] Currently allocated: " 
+        std::cout << "[Arena] Currently allocated: " 
                   << nodeCount << " nodes, ~" << totalBytes << " bytes.\n";
     }
 };

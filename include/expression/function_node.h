@@ -12,8 +12,6 @@ class NodeFactory;
  */
 class FunctionNode : public Node {
 public:
-    using FunctionCallback = std::function<double(const std::vector<double>&)>;
-
     FunctionNode(const std::string& name, int expectedArgCount, const std::vector<Node*>& arguments, FunctionCallback callback);
     virtual ~FunctionNode();
 

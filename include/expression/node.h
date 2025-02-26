@@ -7,6 +7,7 @@
 namespace Expression {
 
 using Env = std::unordered_map<std::string, double>;
+using FunctionCallback = std::function<double(const std::vector<double>&)>;
 
 class NodeFactory;
 
