@@ -46,7 +46,6 @@ void runEvaluationExample() {
         std::cout << "Result: " << result << std::endl;
         std::cout << "\nEvaluation Trace:\n" << Trace::getTrace() << std::endl;
 
-        delete final_expr;
     } catch (const std::exception &e) {
         std::cerr << "Error during evaluation: " << e.what() << std::endl;
     }
@@ -62,6 +61,7 @@ void runDifferentiationExample() {
         Node* exponentiation = new ExponentiationNode(var_x, new NumberNode(2));
         Node* sin_x = new SinNode(var_x);
         Node* expr = new MultiplicationNode(exponentiation, sin_x);
+        Node* expr_2 = new MultiplicationNode(new NumberNode(10), sin_x);
 
         Node* derivative = expr->derivative("x");
 
@@ -69,8 +69,6 @@ void runDifferentiationExample() {
         std::cout << "Derivative: " << derivative->toString() << std::endl;
         std::cout << "\nDifferentiation Trace:\n" << Trace::getTrace() << std::endl;
 
-        delete expr;
-        delete derivative;
     } catch (const std::exception &e) {
         std::cerr << "Error during differentiation: " << e.what() << std::endl;
     }
@@ -98,8 +96,7 @@ void runSimplificationExample() {
         std::cout << "Simplified Expression: " << simplified->toString() << std::endl;
         std::cout << "\nSimplification Trace:\n" << Trace::getTrace() << std::endl;
 
-        delete expr;
-        delete simplified;
+
     } catch (const std::exception &e) {
         std::cerr << "Error during simplification: " << e.what() << std::endl;
     }
