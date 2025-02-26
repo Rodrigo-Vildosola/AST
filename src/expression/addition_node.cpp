@@ -1,6 +1,6 @@
 #include "expression/addition_node.h"
 #include "expression/number_node.h"
-
+#include "tracing/trace.h"
 
 namespace Expression {
 
@@ -13,8 +13,7 @@ double AdditionNode::evaluate(const Env &env) {
     double leftVal = left->evaluate(env);
     double rightVal = right->evaluate(env);
     double result = leftVal + rightVal;
-    Trace::add("Evaluating AdditionNode: (" + left->toString() + " + " + right->toString() +
-               ") = " + std::to_string(result));
+    Trace::addTransformation("Evaluating AdditionNode", toString(), std::to_string(result));
     return result;
 }
 
@@ -27,37 +26,51 @@ Node* AdditionNode::simplify() const {
     Node* leftSimplified = left->simplify();
     Node* rightSimplified = right->simplify();
 
+    std::string before = toString();
+
     // If both sides are numbers, perform constant folding.
     if (auto leftNum = dynamic_cast<NumberNode*>(leftSimplified)) {
         if (auto rightNum = dynamic_cast<NumberNode*>(rightSimplified)) {
-            return new NumberNode(leftNum->getValue() + rightNum->getValue());
+            Node* simplified = new NumberNode(leftNum->getValue() + rightNum->getValue());
+            Trace::addTransformation("Constant folding in AdditionNode", before, simplified->toString());
+            return simplified;
         }
     }
 
     // Identity rule: x + 0 = x
     if (auto rightNum = dynamic_cast<NumberNode*>(rightSimplified)) {
         if (rightNum->getValue() == 0) {
+            Trace::addTransformation("Simplify AdditionNode", before, leftSimplified->toString());
             return leftSimplified;
         }
     }
 
     if (auto leftNum = dynamic_cast<NumberNode*>(leftSimplified)) {
         if (leftNum->getValue() == 0) {
+            Trace::addTransformation("Simplify AdditionNode", before, rightSimplified->toString());
             return rightSimplified;
         }
     }
 
-    return new AdditionNode(leftSimplified, rightSimplified);
+    Node* simplified = new AdditionNode(leftSimplified, rightSimplified);
+    Trace::addTransformation("Simplify AdditionNode", before, simplified->toString());
+    return simplified;
 }
 
 // **Symbolic Differentiation**
 Node* AdditionNode::derivative(const std::string& variable) const {
-    return new AdditionNode(left->derivative(variable), right->derivative(variable));
+    std::string before = toString();
+    Node* derivativeResult = new AdditionNode(left->derivative(variable), right->derivative(variable));
+    Trace::addTransformation("Differentiate AdditionNode", before, derivativeResult->toString());
+    return derivativeResult;
 }
 
 // **Symbolic Substitution**
 Node* AdditionNode::substitute(const std::string& variable, Node* value) const {
-    return new AdditionNode(left->substitute(variable, value), right->substitute(variable, value));
+    std::string before = toString();
+    Node* substituted = new AdditionNode(left->substitute(variable, value), right->substitute(variable, value));
+    Trace::addTransformation("Substituting in AdditionNode", before, substituted->toString());
+    return substituted;
 }
 
 // **Clone**

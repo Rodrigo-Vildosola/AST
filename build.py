@@ -32,7 +32,7 @@ def run():
         try:
             subprocess.check_call([exe_path])
         except subprocess.CalledProcessError as e:
-            print("Executable returned an error.", file=sys.stderr)
+            print("Executable returned an error.", e, file=sys.stderr)
             sys.exit(e.returncode)
     else:
         print("Executable not found. Please build the project first.")
