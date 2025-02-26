@@ -10,9 +10,7 @@ namespace Expression {
 MultiplicationNode::MultiplicationNode(Node* left, Node* right)
     : BinaryOpNode(left, right) {}
 
-MultiplicationNode::~MultiplicationNode() {
-    // No child deletes in Full Arena
-}
+MultiplicationNode::~MultiplicationNode() {}
 
 double MultiplicationNode::evaluate(const Env &env) {
     double leftVal = left->evaluate(env);

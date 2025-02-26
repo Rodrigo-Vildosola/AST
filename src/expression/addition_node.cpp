@@ -8,9 +8,7 @@ namespace Expression {
 AdditionNode::AdditionNode(Node* left, Node* right)
     : BinaryOpNode(left, right) {}
 
-AdditionNode::~AdditionNode() {
-    // No child deletes if using full arena
-}
+AdditionNode::~AdditionNode() {}
 
 double AdditionNode::evaluate(const Env &env) {
     double leftVal = left->evaluate(env);

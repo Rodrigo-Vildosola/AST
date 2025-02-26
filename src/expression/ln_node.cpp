@@ -9,9 +9,7 @@ namespace Expression {
 LnNode::LnNode(Node* operand)
     : UnaryOpNode(operand) {}
 
-LnNode::~LnNode() {
-    // no child delete
-}
+LnNode::~LnNode() {}
 
 double LnNode::evaluate(const Env &env) {
     double opVal = operand->evaluate(env);

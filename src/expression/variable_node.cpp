@@ -8,9 +8,7 @@ namespace Expression {
 VariableNode::VariableNode(const std::string& name) 
     : name(name) {}
 
-VariableNode::~VariableNode() {
-    // no child delete
-}
+VariableNode::~VariableNode() {}
 
 double VariableNode::evaluate(const Env &env) {
     auto it = env.find(name);

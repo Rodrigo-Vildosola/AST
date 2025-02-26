@@ -10,9 +10,7 @@ namespace Expression {
 CosNode::CosNode(Node* operand)
     : UnaryOpNode(operand) {}
 
-CosNode::~CosNode() {
-    // no manual delete if using full arena
-}
+CosNode::~CosNode() {}
 
 double CosNode::evaluate(const Env &env) {
     double opVal = operand->evaluate(env);

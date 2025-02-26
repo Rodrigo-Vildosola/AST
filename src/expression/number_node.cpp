@@ -7,9 +7,7 @@ namespace Expression {
 
 NumberNode::NumberNode(double value) : value(value) {}
 
-NumberNode::~NumberNode() {
-    // No child deletes in full arena
-}
+NumberNode::~NumberNode() {}
 
 double NumberNode::evaluate(const Env &env) {
     Trace::add("Evaluating NumberNode: " + toString());

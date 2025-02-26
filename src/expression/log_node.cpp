@@ -11,9 +11,7 @@ namespace Expression {
 LogNode::LogNode(Node* base, Node* operand)
     : BinaryOpNode(base, operand) {}
 
-LogNode::~LogNode() {
-    // no child delete
-}
+LogNode::~LogNode() {}
 
 double LogNode::evaluate(const Env &env) {
     double baseVal = left->evaluate(env);
