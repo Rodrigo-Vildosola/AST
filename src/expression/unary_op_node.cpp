@@ -5,7 +5,7 @@ namespace Expression {
 UnaryOpNode::UnaryOpNode(Node* operand) : operand(operand) {}
 
 UnaryOpNode::~UnaryOpNode() {
-    delete operand;
+    // delete operand;
 }
 
 } // namespace Expression

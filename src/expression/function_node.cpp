@@ -12,9 +12,9 @@ FunctionNode::FunctionNode(const std::string& name, int expectedArgCount, const 
 }
 
 FunctionNode::~FunctionNode() {
-    for (auto arg : arguments) {
-        delete arg;
-    }
+    // for (auto arg : arguments) {
+    //     delete arg;
+    // }
 }
 
 double FunctionNode::evaluate(const Env &env) {

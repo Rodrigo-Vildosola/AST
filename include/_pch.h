@@ -8,3 +8,4 @@
 #include <stdexcept>
 #include <cmath>
 #include <iomanip>
+#include <memory>

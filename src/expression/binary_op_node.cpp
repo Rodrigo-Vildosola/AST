@@ -6,8 +6,8 @@ BinaryOpNode::BinaryOpNode(Node* left, Node* right)
     : left(left), right(right) {}
 
 BinaryOpNode::~BinaryOpNode() {
-    delete left;
-    delete right;
+    // delete left;
+    // delete right;
 }
 
 } // namespace Expression
