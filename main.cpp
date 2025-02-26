@@ -4,44 +4,12 @@
 #include <stdexcept>
 #include "memory/arena.h"
 #include "memory/arena_allocator.h"
+#include "memory/default_allocator.h"
 #include "helpers/node_factory.h"
 
 #include "tracing/trace.h"
 
 using namespace Expression;
-
-void runSolveExample() {
-    Trace::clear();
-    std::cout << "\n=== Solve Equation Example ===\n";
-
-    try {
-        Arena arena;
-        ArenaAllocator arenaAlloc(arena);
-        NodeFactory f(&arenaAlloc);
-
-        // Create a simple equation: x == 3
-        // (This means: the expression is an equality node with left side 'x' and right side '3')
-        Node* equation = f.eq(
-            f.add(f.mul(f.num(2), f.var("x")), f.num(5)),  // Left: (2 * x) + 5
-            f.num(11)                                      // Right: 11
-        );
-
-        arena.printStats();
-
-        if (EqualityNode* eq = dynamic_cast<EqualityNode*>(equation)) {
-            Node* solution = eq->solveFor("x", f);
-
-            std::cout << "Equation: " << equation->toString() << std::endl;
-            std::cout << "Solution for x: " << solution->toString() << std::endl;
-        } else {
-            throw std::runtime_error("Not an equation");
-        }
-        // Note: Do not manually delete 'equation' or 'solution' when using the arena allocator.
-        // The arena will take care of deallocation when it goes out of scope.
-    } catch (const std::exception &e) {
-        std::cerr << "Error during solving: " << e.what() << std::endl;
-    }
-}
 
 void runEvaluationExample() {
     Trace::clear();
@@ -132,13 +100,104 @@ void runDifferentiationExample() {
     }
 }
 
+void runSolveExample() {
+    Trace::clear();
+    std::cout << "\n=== Solve Equation Example ===\n";
+
+    try {
+        Arena arena;
+        ArenaAllocator arenaAlloc(arena);
+        NodeFactory f(&arenaAlloc);
+
+        // Create a simple equation: x == 3
+        // (This means: the expression is an equality node with left side 'x' and right side '3')
+        Node* equation = f.eq(
+            f.add(f.mul(f.num(2), f.var("x")), f.num(5)),  // Left: (2 * x) + 5
+            f.num(11)                                      // Right: 11
+        );
+
+        arena.printStats();
+
+        if (EqualityNode* eq = dynamic_cast<EqualityNode*>(equation)) {
+            Node* solution = eq->solveFor("x", f);
+
+            std::cout << "Equation: " << equation->toString() << std::endl;
+            std::cout << "Solution for x: " << solution->toString() << std::endl;
+        } else {
+            throw std::runtime_error("Not an equation");
+        }
+        // Note: Do not manually delete 'equation' or 'solution' when using the arena allocator.
+        // The arena will take care of deallocation when it goes out of scope.
+    } catch (const std::exception &e) {
+        std::cerr << "Error during solving: " << e.what() << std::endl;
+    }
+}
+
+void runEvalExampleArena() {
+    Trace::clear();
+    std::cout << "\n=== Evaluation Example (Default Allocator) ===\n";
+
+    Arena arena;
+    ArenaAllocator arenaAlloc(arena);
+    NodeFactory f(&arenaAlloc);
+
+    Env env;
+    env["x"] = 3.14159265359;
+    env["y"] = 2.0;
+
+    Node* expr = f.div(
+        f.mul(
+            f.add(f.sin(f.var("x")), f.var("y")),
+            f.log(f.num(2), f.var("x"))
+        ),
+        f.ln(f.var("y"))
+    );
+
+    double result = expr->evaluate(env);
+
+    std::cout << "Expression: " << expr->toString() << std::endl;
+    std::cout << "Result: " << result << std::endl;
+}
+
+
+void runEvalExampleDefault() {
+    Trace::clear();
+    std::cout << "\n=== Evaluation Example (Default Allocator) ===\n";
+
+    DefaultAllocator defaultAlloc;
+    NodeFactory f(&defaultAlloc);
+
+    Env env;
+    env["x"] = 3.14159265359;
+    env["y"] = 2.0;
+
+    Node* expr = f.div(
+        f.mul(
+            f.add(f.sin(f.var("x")), f.var("y")),
+            f.log(f.num(2), f.var("x"))
+        ),
+        f.ln(f.var("y"))
+    );
+
+    double result = expr->evaluate(env);
+
+    std::cout << "Expression: " << expr->toString() << std::endl;
+    std::cout << "Result: " << result << std::endl;
+
+    // Clean up manually if using DefaultAllocator.
+    delete expr;
+}
+
 int main() {
     try {
-        runSolveExample();
+        runEvalExampleArena();
+        runEvalExampleDefault();
 
-        runEvaluationExample();
-        runSimplificationExample();
-        runDifferentiationExample();
+        // runSolveExample();
+
+        // runEvaluationExample();
+        // runSimplificationExample();
+        // runDifferentiationExample();
     } catch (const std::exception &e) {
         std::cerr << "Unexpected error in main: " << e.what() << std::endl;
     }
