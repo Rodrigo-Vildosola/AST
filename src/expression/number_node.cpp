@@ -17,4 +17,24 @@ std::string NumberNode::toString() const {
     return oss.str();
 }
 
+Node* NumberNode::simplify() const {
+    return new NumberNode(value);
+}
+
+Node* NumberNode::derivative(const std::string& variable) const {
+    return new NumberNode(0);  // d/dx (constant) = 0
+}
+
+Node* NumberNode::substitute(const std::string& variable, Node* value) const {
+    return new NumberNode(this->value);
+}
+
+Node* NumberNode::clone() const {
+    return new NumberNode(value);
+}
+
+double NumberNode::getValue() const {
+    return value;
+}
+
 } // namespace Expression
