@@ -18,7 +18,7 @@ void runEvaluationExample() {
     try {
         Arena arena;
         ArenaAllocator arenaAlloc(arena);
-        NodeFactory f(&arenaAlloc);
+        NodeFactory f(&arenaAlloc, DeletionPolicy::Arena);
 
         // Define the variable environment.
         Env env;
@@ -51,7 +51,7 @@ void runSimplificationExample() {
     try {
         Arena arena;
         ArenaAllocator arenaAlloc(arena);
-        NodeFactory f(&arenaAlloc);
+        NodeFactory f(&arenaAlloc, DeletionPolicy::Arena);
 
         // Expression: ((x + 0) * (1 * y)) / (x^0 + y^1)
         Node* expr = f.div(
@@ -82,7 +82,7 @@ void runDifferentiationExample() {
     try {
         Arena arena;
         ArenaAllocator arenaAlloc(arena);
-        NodeFactory f(&arenaAlloc);
+        NodeFactory f(&arenaAlloc, DeletionPolicy::Arena);
 
         // Expression: d/dx (x^2 * sin(x))
         Node* expr = f.mul(
@@ -100,6 +100,7 @@ void runDifferentiationExample() {
     }
 }
 
+
 void runSolveExample() {
     Trace::clear();
     std::cout << "\n=== Solve Equation Example ===\n";
@@ -107,7 +108,7 @@ void runSolveExample() {
     try {
         Arena arena;
         ArenaAllocator arenaAlloc(arena);
-        NodeFactory f(&arenaAlloc);
+        NodeFactory f(&arenaAlloc, DeletionPolicy::Arena);
 
         // Create a simple equation: x == 3
         // (This means: the expression is an equality node with left side 'x' and right side '3')
@@ -133,13 +134,14 @@ void runSolveExample() {
     }
 }
 
+
 void runEvalExampleArena() {
     Trace::clear();
     std::cout << "\n=== Evaluation Example (Default Allocator) ===\n";
 
     Arena arena;
     ArenaAllocator arenaAlloc(arena);
-    NodeFactory f(&arenaAlloc);
+    NodeFactory f(&arenaAlloc, DeletionPolicy::Arena);
 
     Env env;
     env["x"] = 3.14159265359;
@@ -159,13 +161,12 @@ void runEvalExampleArena() {
     std::cout << "Result: " << result << std::endl;
 }
 
-
 void runEvalExampleDefault() {
     Trace::clear();
     std::cout << "\n=== Evaluation Example (Default Allocator) ===\n";
 
     DefaultAllocator defaultAlloc;
-    NodeFactory f(&defaultAlloc);
+    NodeFactory f(&defaultAlloc, DeletionPolicy::Default);
 
     Env env;
     env["x"] = 3.14159265359;

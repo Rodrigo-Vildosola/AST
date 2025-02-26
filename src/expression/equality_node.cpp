@@ -79,8 +79,10 @@ EqualityNode::EqualityNode(Node* left, Node* right)
     : left(left), right(right) {}
 
 EqualityNode::~EqualityNode() {
-    // delete left;
-    // delete right;
+    if (AllocationConfig::getPolicy() == DeletionPolicy::Default) {
+        delete left;
+        delete right;
+    }
 }
 
 double EqualityNode::evaluate(const Env &env) {

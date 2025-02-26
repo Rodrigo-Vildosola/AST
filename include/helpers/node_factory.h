@@ -2,6 +2,8 @@
 #define NODE_FACTORY_H
 
 #include "memory/iallocator.h"
+#include "memory/allocation_config.h"
+
 
 namespace Expression {
 
@@ -13,7 +15,11 @@ class NodeFactory {
 private:
     IAllocator* allocator;
 public:
-    explicit NodeFactory(IAllocator* alloc) : allocator(alloc) {}
+    NodeFactory(IAllocator* alloc, DeletionPolicy policy)
+        : allocator(alloc)
+    {
+        AllocationConfig::setPolicy(policy);
+    }
 
     // Number & Variable Nodes
     Node* num(double value) { return allocator->createNumber(value); }

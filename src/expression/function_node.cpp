@@ -14,7 +14,11 @@ FunctionNode::FunctionNode(const std::string& name, int expectedArgCount, const 
 }
 
 FunctionNode::~FunctionNode() {
-    // no manual delete in full arena
+    if (AllocationConfig::getPolicy() == DeletionPolicy::Default) {
+        for (auto &arg : arguments) {
+            delete arg;
+        }
+    }
 }
 
 double FunctionNode::evaluate(const Env &env) {

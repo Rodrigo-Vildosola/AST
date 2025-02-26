@@ -13,7 +13,6 @@ public:
 
     Node* left;
     Node* right;
-protected:
 };
 
 } // namespace Expression

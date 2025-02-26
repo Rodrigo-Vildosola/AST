@@ -17,9 +17,9 @@ def clean():
 def build(debug=False):
     build_type = "Debug" if debug else "Release"
     try:
-        subprocess.check_call(["cmake", "-S", ".", "-B", BUILD_DIR, f"-DCMAKE_BUILD_TYPE={build_type}"])
+        subprocess.check_call(["cmake", "-S", ".", "-B", BUILD_DIR, "-G", "Ninja", f"-DCMAKE_BUILD_TYPE={build_type}"])
         subprocess.check_call(["cmake", "--build", BUILD_DIR])
-        print(f"Build completed ({build_type} mode).")
+        print(f"Build completed ({build_type} mode) using Ninja.")
     except subprocess.CalledProcessError as e:
         print("Build failed.", file=sys.stderr)
         sys.exit(e.returncode)
@@ -48,7 +48,7 @@ def main():
     elif args.action == "build-debug":
         build(debug=True)
     elif args.action == "run":
-        build(debug=True)  # Ensure we are using debug build before running
+        build(debug=True)
         run()
 
 if __name__ == "__main__":
