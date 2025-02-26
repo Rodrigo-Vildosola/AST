@@ -137,7 +137,7 @@ void runSolveExample() {
 
 void runEvalExampleArena() {
     Trace::clear();
-    std::cout << "\n=== Evaluation Example (Default Allocator) ===\n";
+    std::cout << "\n=== Evaluation Example (Arena Allocator) ===\n";
 
     Arena arena;
     ArenaAllocator arenaAlloc(arena);
