@@ -7,7 +7,7 @@ UnaryOpNode::UnaryOpNode(Node* operand)
     : operand(operand) {}
 
 UnaryOpNode::~UnaryOpNode() {
-    if (AllocationConfig::getPolicy() == DeletionPolicy::Default) {
+    if (AllocationConfig::getPolicy() == AllocatorPolicy::Default) {
         delete operand;
     }
 }

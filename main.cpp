@@ -18,7 +18,7 @@ void runEvaluationExample() {
     try {
         Arena arena;
         ArenaAllocator arenaAlloc(arena);
-        NodeFactory f(&arenaAlloc, DeletionPolicy::Arena);
+        NodeFactory f(&arenaAlloc, AllocatorPolicy::Arena);
 
         // Define the variable environment.
         Env env;
@@ -51,7 +51,7 @@ void runSimplificationExample() {
     try {
         Arena arena;
         ArenaAllocator arenaAlloc(arena);
-        NodeFactory f(&arenaAlloc, DeletionPolicy::Arena);
+        NodeFactory f(&arenaAlloc, AllocatorPolicy::Arena);
 
         // Expression: ((x + 0) * (1 * y)) / (x^0 + y^1)
         Node* expr = f.div(
@@ -82,7 +82,7 @@ void runDifferentiationExample() {
     try {
         Arena arena;
         ArenaAllocator arenaAlloc(arena);
-        NodeFactory f(&arenaAlloc, DeletionPolicy::Arena);
+        NodeFactory f(&arenaAlloc, AllocatorPolicy::Arena);
 
         // Expression: d/dx (x^2 * sin(x))
         Node* expr = f.mul(
@@ -108,7 +108,7 @@ void runSolveExample() {
     try {
         Arena arena;
         ArenaAllocator arenaAlloc(arena);
-        NodeFactory f(&arenaAlloc, DeletionPolicy::Arena);
+        NodeFactory f(&arenaAlloc, AllocatorPolicy::Arena);
 
         // Create a simple equation: x == 3
         // (This means: the expression is an equality node with left side 'x' and right side '3')
@@ -141,7 +141,7 @@ void runEvalExampleArena() {
 
     Arena arena;
     ArenaAllocator arenaAlloc(arena);
-    NodeFactory f(&arenaAlloc, DeletionPolicy::Arena);
+    NodeFactory f(&arenaAlloc, AllocatorPolicy::Arena);
 
     Env env;
     env["x"] = 3.14159265359;
@@ -166,7 +166,7 @@ void runEvalExampleDefault() {
     std::cout << "\n=== Evaluation Example (Default Allocator) ===\n";
 
     DefaultAllocator defaultAlloc;
-    NodeFactory f(&defaultAlloc, DeletionPolicy::Default);
+    NodeFactory f(&defaultAlloc, AllocatorPolicy::Default);
 
     Env env;
     env["x"] = 3.14159265359;
@@ -192,13 +192,13 @@ void runEvalExampleDefault() {
 int main() {
     try {
         // runEvalExampleArena();
-        // runEvalExampleDefault();
+        runEvalExampleDefault();
 
-        runSolveExample();
+        // runSolveExample();
 
         // runEvaluationExample();
         // runSimplificationExample();
-        // runDifferentiationExample();
+        runDifferentiationExample();
     } catch (const std::exception &e) {
         std::cerr << "Unexpected error in main: " << e.what() << std::endl;
     }

@@ -7,7 +7,8 @@ BinaryOpNode::BinaryOpNode(Node* left, Node* right)
     : left(left), right(right) {}
 
 BinaryOpNode::~BinaryOpNode() {
-    if (AllocationConfig::getPolicy() == DeletionPolicy::Default) {
+    if (AllocationConfig::getPolicy() == AllocatorPolicy::Default) {
+        std::cout << "Deleting" << std::endl;
         delete left;
         delete right;
     }

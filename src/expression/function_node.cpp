@@ -14,7 +14,7 @@ FunctionNode::FunctionNode(const std::string& name, int expectedArgCount, const 
 }
 
 FunctionNode::~FunctionNode() {
-    if (AllocationConfig::getPolicy() == DeletionPolicy::Default) {
+    if (AllocationConfig::getPolicy() == AllocatorPolicy::Default) {
         for (auto &arg : arguments) {
             delete arg;
         }

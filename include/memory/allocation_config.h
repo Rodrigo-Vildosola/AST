@@ -3,21 +3,21 @@
 
 namespace Expression {
 
-enum class DeletionPolicy {
+enum class AllocatorPolicy {
     Default, // Nodes delete their children.
     Arena    // Arena manages deletion.
 };
 
 class AllocationConfig {
 public:
-    static DeletionPolicy getPolicy() {
+    static AllocatorPolicy getPolicy() {
         return policy;
     }
-    static void setPolicy(DeletionPolicy p) {
+    static void setPolicy(AllocatorPolicy p) {
         policy = p;
     }
 private:
-    static DeletionPolicy policy;
+    static AllocatorPolicy policy;
 };
 
 } // namespace Expression

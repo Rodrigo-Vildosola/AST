@@ -1,5 +1,5 @@
 #include "memory/allocation_config.h"
 
 namespace Expression {
-    DeletionPolicy AllocationConfig::policy = DeletionPolicy::Default;
+    AllocatorPolicy AllocationConfig::policy = AllocatorPolicy::Arena;
 }
