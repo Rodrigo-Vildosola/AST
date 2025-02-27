@@ -18,6 +18,7 @@ public:
     virtual Node* createExponentiation(Node* base, Node* exponent) = 0;
     virtual Node* createSin(Node* operand) = 0;
     virtual Node* createCos(Node* operand) = 0;
+    virtual Node* createTan(Node* operand) = 0;
     virtual Node* createLn(Node* operand) = 0;
     virtual Node* createLog(Node* base, Node* operand) = 0;
     virtual Node* createEquality(Node* left, Node* right) = 0;

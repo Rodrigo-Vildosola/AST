@@ -6,6 +6,8 @@
 #include "memory/arena_allocator.h"
 #include "memory/default_allocator.h"
 #include "helpers/node_factory.h"
+#include "rewriting/rewriter.h"
+#include "solver/solver.h"
 
 #include "tracing/trace.h"
 
@@ -118,20 +120,26 @@ void runSolveExample() {
         // Create a simple equation: x == 3
         // (This means: the expression is an equality node with left side 'x' and right side '3')
         Node* equation = f.eq(
-            f.add(f.mul(f.num(2), f.var("x")), f.num(5)),  // Left: (2 * x) + 5
-            f.num(11)                                      // Right: 11
+            f.add(f.mul(f.num(2), f.var("x")), f.num(5)),
+            f.num(20)
         );
 
-        if (EqualityNode* eq = dynamic_cast<EqualityNode*>(equation)) {
-            Node* solution = eq->solveFor("x", f);
+        std::cout << "Original Equation: " << equation->toString() << std::endl;
 
-            std::cout << "Equation: " << equation->toString() << std::endl;
+        // Use the rewriting engine to further normalize the equation.
+        Rewriter rewriter;
+        Node* rewritten_eq = rewriter.rewrite(equation, f);
+        std::cout << "Rewritten Equation: " << rewritten_eq->toString() << std::endl;
+
+        // Solve the equation using our Solver module.
+        if (auto eqNode = dynamic_cast<EqualityNode*>(equation)) {
+            Node* solution = Solver::solve_linear(eqNode, "x", f);
             std::cout << "Solution for x: " << solution->toString() << std::endl;
+            // Note: When using an arena, you do not manually delete nodes.
         } else {
-            throw std::runtime_error("Not an equation");
+            std::cerr << "Not an equation!" << std::endl;
         }
 
-        arena.printStats();
         // Note: Do not manually delete 'equation' or 'solution' when using the arena allocator.
         // The arena will take care of deallocation when it goes out of scope.
     } catch (const std::exception &e) {
@@ -199,10 +207,10 @@ int main() {
         // runEvalExampleArena();
         // runEvalExampleDefault();
 
-        // runSolveExample();
+        runSolveExample();
 
         // runEvaluationExample();
-        runSimplificationExample();
+        // runSimplificationExample();
         // runDifferentiationExample();
     } catch (const std::exception &e) {
         std::cerr << "Unexpected error in main: " << e.what() << std::endl;

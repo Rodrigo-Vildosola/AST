@@ -1,7 +1,15 @@
 // File: rewriting/Rewriter.h
 #pragma once
 
-#include "rewriting/addition_constant_folding_rule.h"
+#include "rewriting/factorization_rule.h"
+#include "rewriting/exp_product_rule.h"
+#include "rewriting/exp_division_rule.h"
+#include "rewriting/ln_difference_rule.h"
+#include "rewriting/ln_addition_rule.h"
+#include "rewriting/log_difference_rule.h"
+#include "rewriting/log_addition_rule.h"
+
+
 #include "rewriting/rewrite_rule.h"
 #include "helpers/node_factory.h"
 
@@ -13,8 +21,13 @@ private:
 public:
     Rewriter() {
         // Register default rules.
-        rules.push_back(std::make_unique<AdditionConstantFoldingRule>());
-        // rules.push_back(std::make_unique<MultiplicationConstantFoldingRule>());
+        rules.push_back(std::make_unique<ExpProductRule>());
+        rules.push_back(std::make_unique<ExpDivisionRule>());
+        rules.push_back(std::make_unique<LnDifferenceRule>());
+        rules.push_back(std::make_unique<LnAdditionRule>());
+        rules.push_back(std::make_unique<LogDifferenceRule>());
+        rules.push_back(std::make_unique<LogAdditionRule>());
+        rules.push_back(std::make_unique<FactorizationRule>());
         // Add more rules as needed.
     }
 

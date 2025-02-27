@@ -101,7 +101,7 @@ std::string EqualityNode::toString() const {
 Node* EqualityNode::simplify(NodeFactory &factory) const {
     Node* leftS = left->simplify(factory);
     Node* rightS = right->simplify(factory);
-    if (leftS->toString() == rightS->toString()) {
+    if (leftS->equals(rightS)) {
         Trace::addTransformation("Simplify EqualityNode", toString(), "true");
         return factory.num(1);
     }

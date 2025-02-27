@@ -35,28 +35,53 @@ std::string ExponentiationNode::toString() const {
 
 // **Symbolic Simplification**
 Node* ExponentiationNode::simplify(NodeFactory &factory) const {
+    std::string before = toString();
     Node* baseSimplified = left->simplify(factory);
     Node* exponentSimplified = right->simplify(factory);
 
+    // Constant folding: if both base and exponent are constants, compute the power.
+    if (auto baseNum = dynamic_cast<NumberNode*>(baseSimplified)) {
+        if (auto exponentNum = dynamic_cast<NumberNode*>(exponentSimplified)) {
+            double value = std::pow(baseNum->getValue(), exponentNum->getValue());
+            Node* folded = factory.num(value);
+            Trace::addTransformation("Simplify ExponentiationNode (constant folding)", before, folded->toString());
+            return folded;
+        }
+    }
+
+    // Special cases:
     // x^0 = 1
     if (auto exponentNum = dynamic_cast<NumberNode*>(exponentSimplified)) {
         if (exponentNum->getValue() == 0) {
-            return factory.num(1);
+            Node* folded = factory.num(1);
+            Trace::addTransformation("Simplify ExponentiationNode (zero exponent)", before, folded->toString());
+            return folded;
         }
+        // x^1 = x
         if (exponentNum->getValue() == 1) {
+            Trace::addTransformation("Simplify ExponentiationNode (exponent one)", before, baseSimplified->toString());
             return baseSimplified;
         }
     }
-    // 0^x = 0 (except 0^0)
+
+    // 0^x = 0 (except 0^0, which is undefined, but assumed handled elsewhere)
     if (auto baseNum = dynamic_cast<NumberNode*>(baseSimplified)) {
         if (baseNum->getValue() == 0) {
-            return factory.num(0);
+            Node* folded = factory.num(0);
+            Trace::addTransformation("Simplify ExponentiationNode (zero base)", before, folded->toString());
+            return folded;
         }
+        // 1^x = 1
         if (baseNum->getValue() == 1) {
-            return factory.num(1);
+            Node* folded = factory.num(1);
+            Trace::addTransformation("Simplify ExponentiationNode (base one)", before, folded->toString());
+            return folded;
         }
     }
-    return factory.exp(baseSimplified, exponentSimplified);
+
+    Node* result = factory.exp(baseSimplified, exponentSimplified);
+    Trace::addTransformation("Simplify ExponentiationNode", before, result->toString());
+    return result;
 }
 
 // **Symbolic Differentiation (General Power Rule)**

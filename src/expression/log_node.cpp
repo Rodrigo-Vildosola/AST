@@ -35,7 +35,7 @@ Node* LogNode::simplify(NodeFactory &factory) const {
     Node* operandS = right->simplify(factory);
 
     // log_b(b) = 1
-    if (baseS->toString() == operandS->toString()) {
+    if (baseS->equals(operandS)) {
         return factory.num(1);
     }
 

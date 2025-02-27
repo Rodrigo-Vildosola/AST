@@ -27,6 +27,15 @@ std::string CosNode::toString() const {
 Node* CosNode::simplify(NodeFactory &factory) const {
     std::string before = toString();
     Node* simplifiedOperand = operand->simplify(factory);
+
+    // Constant folding: if the operand is a constant, evaluate cos immediately.
+    if (auto num = dynamic_cast<NumberNode*>(simplifiedOperand)) {
+        double value = num->getValue();
+        Node* folded = factory.num(std::cos(value));
+        Trace::addTransformation("Simplify CosNode (constant folding)", before, folded->toString());
+        return folded;
+    }
+
     Node* result = factory.cos(simplifiedOperand);
     Trace::addTransformation("Simplify CosNode", before, result->toString());
     return result;

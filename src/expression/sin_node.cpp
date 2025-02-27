@@ -29,6 +29,15 @@ std::string SinNode::toString() const {
 Node* SinNode::simplify(NodeFactory &factory) const {
     std::string before = toString();
     Node* simplifiedOperand = operand->simplify(factory);
+
+    // Constant folding: if the operand is a constant, evaluate sin immediately.
+    if (auto num = dynamic_cast<NumberNode*>(simplifiedOperand)) {
+        double value = num->getValue();
+        Node* folded = factory.num(std::sin(value));
+        Trace::addTransformation("Simplify SinNode (constant folding)", before, folded->toString());
+        return folded;
+    }
+
     Node* result = factory.sin(simplifiedOperand);
     Trace::addTransformation("Simplify SinNode", before, result->toString());
     return result;

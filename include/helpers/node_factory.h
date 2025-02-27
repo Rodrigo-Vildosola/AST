@@ -144,6 +144,13 @@ public:
         });
     }
 
+    Node* tan(Node* operand) {
+        std::string key = keyForUnary("tan", operand);
+        return getOrCreate(key, [this, operand]() {
+            return allocator->createTan(operand);
+        });
+    }
+
     Node* ln(Node* operand) {
         std::string key = keyForUnary("ln", operand);
         return getOrCreate(key, [this, operand]() {

@@ -1,30 +1,48 @@
+// solver/solver.h
 #pragma once
 
 #include "expression/equality_node.h"
 #include "helpers/node_factory.h"
+#include "rewriting/rewriter.h"
+#include "tracing/trace.h"
+#include <stdexcept>
+#include <cmath>
 
 namespace Expression {
 
 class Solver {
 public:
-    // Solve a linear equation for the given variable.
-    // The equation is assumed to be of the form f(x) == 0.
-    static Node* solveLinear(const EqualityNode* eq, const std::string &variable, NodeFactory &factory) {
-        // Convert the equation f(x) = g(x) into f(x) - g(x) = 0.
+    /// Solve a linear equation for the given variable.
+    /// Assumes the equation is of the form f(x) == g(x).
+    static Node* solve_linear(const EqualityNode* eq, const std::string &variable, NodeFactory &factory) {
+        // Convert equation f(x)==g(x) to f(x)-g(x)==0.
         Node* diff = factory.sub(eq->left->clone(factory), eq->right->clone(factory));
-        Node* simplifiedDiff = diff->simplify(factory);
-        delete diff; // Free temporary difference if needed.
+        Node* simplified_diff = diff->simplify(factory);
 
         double a = 0, b = 0;
-        // Try to extract coefficients so that simplifiedDiff is a*x + b.
-        if (!simplifiedDiff->extractLinearCoeffs(variable, a, b) || a == 0) {
-            Trace::addTransformation("Solving equation", simplifiedDiff->toString(), "Unable to solve linearly");
-            return simplifiedDiff->clone(factory); // Or return nullptr.
+        if (!simplified_diff->extractLinearCoeffs(variable, a, b) || a == 0) {
+            Trace::addTransformation("Solving equation", simplified_diff->toString(), "Unable to solve linearly");
+            return simplified_diff->clone(factory);  // Or throw an error.
         }
         double solution = -b / a;
         Node* solNode = factory.num(solution);
-        Trace::addTransformation("Solving equation", simplifiedDiff->toString(), solNode->toString());
+        Trace::addTransformation("Solving equation", simplified_diff->toString(), solNode->toString());
         return solNode;
+    }
+
+    /// Solve an equation using the rewriting engine to normalize the equation first.
+    static Node* solve(const EqualityNode* eq, const std::string &variable, NodeFactory &factory) {
+        Rewriter rewriter;
+        // First, use the rewriter to transform the equation.
+        Node* rewritten = rewriter.rewrite(eq, factory);
+        // Now assume rewritten is an EqualityNode or can be interpreted as one.
+        // Here, for simplicity, we assume it is still an EqualityNode.
+        if (auto eqNode = dynamic_cast<EqualityNode*>(rewritten)) {
+            Node* sol = solve_linear(eqNode, variable, factory);
+            return sol;
+        } else {
+            throw std::runtime_error("Rewritten expression is not an equation");
+        }
     }
 };
 

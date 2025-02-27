@@ -14,6 +14,7 @@
 #include "expression/variable_node.h"
 #include "expression/equality_node.h"
 #include "expression/function_node.h"
+#include "expression/tan_node.h"
 
 namespace Expression {
 
@@ -47,6 +48,9 @@ public:
     }
     virtual Node* createCos(Node* operand) override {
         return new CosNode(operand);
+    }
+    virtual Node* createTan(Node* operand) override {
+        return new TanNode(operand);
     }
     virtual Node* createLn(Node* operand) override {
         return new LnNode(operand);
