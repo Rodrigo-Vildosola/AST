@@ -1,5 +1,4 @@
-#ifndef BINARYOPNODE_HPP
-#define BINARYOPNODE_HPP
+#pragma once
 
 #include "node.h"
 
@@ -16,5 +15,3 @@ public:
 };
 
 } // namespace Expression
-
-#endif

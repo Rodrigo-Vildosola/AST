@@ -65,6 +65,15 @@ Node* LogNode::clone(NodeFactory &factory) const {
     return factory.log(left->clone(factory), right->clone(factory));
 }
 
+bool LogNode::equals(const Node* other) const {
+    if (const LogNode* log = dynamic_cast<const LogNode*>(other)) {
+        // Addition is commutative.
+        return (left->equals(log->left) && right->equals(log->right)) ||
+               (left->equals(log->right) && right->equals(log->left));
+    }
+    return false;
+}
+
 bool LogNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
     double a_base = 0, b_base = 0;
     double a_operand = 0, b_operand = 0;

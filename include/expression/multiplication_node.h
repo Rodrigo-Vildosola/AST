@@ -1,6 +1,4 @@
-#ifndef MULTIPLICATIONNODE_HPP
-#define MULTIPLICATIONNODE_HPP
-
+#pragma once
 #include "binary_op_node.h"
 
 namespace Expression {
@@ -23,9 +21,8 @@ public:
     virtual Node* clone(NodeFactory &factory) const override;
 
     virtual bool extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const override;
+    virtual bool equals(const Node* other) const override;
 
 };
 
 } // namespace Expression
-
-#endif

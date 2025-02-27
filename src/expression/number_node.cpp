@@ -45,6 +45,13 @@ Node* NumberNode::clone(NodeFactory &factory) const {
     return factory.num(value);
 }
 
+bool NumberNode::equals(const Node* other) const {
+    if (const NumberNode* num = dynamic_cast<const NumberNode*>(other)) {
+        return std::fabs(value - num->value) < 1e-9;
+    }
+    return false;
+}
+
 double NumberNode::getValue() const {
     return value;
 }

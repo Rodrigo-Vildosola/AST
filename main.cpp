@@ -54,15 +54,20 @@ void runSimplificationExample() {
         NodeFactory f(&arenaAlloc, AllocatorPolicy::Arena);
 
         // Expression: ((x + 0) * (1 * y)) / (x^0 + y^1)
-        Node* expr = f.div(
-            f.mul(
-                f.add(f.var("x"), f.num(0)),
-                f.mul(f.num(1), f.var("y"))
-            ),
-            f.add(
-                f.exp(f.var("x"), f.num(0)),
-                f.exp(f.var("y"), f.num(1))
-            )
+        // Node* expr = f.div(
+        //     f.mul(
+        //         f.add(f.var("x"), f.num(0)),
+        //         f.mul(f.num(1), f.var("y"))
+        //     ),
+        //     f.add(
+        //         f.exp(f.var("x"), f.num(0)),
+        //         f.exp(f.var("y"), f.num(1))
+        //     )
+        // );
+
+        Node* expr = f.mul(
+            f.add(f.num(10), f.num(5)),
+            f.num(4)
         );
 
         Node* simplified = expr->simplify(f);
@@ -192,13 +197,13 @@ void runEvalExampleDefault() {
 int main() {
     try {
         // runEvalExampleArena();
-        runEvalExampleDefault();
+        // runEvalExampleDefault();
 
         // runSolveExample();
 
         // runEvaluationExample();
-        // runSimplificationExample();
-        runDifferentiationExample();
+        runSimplificationExample();
+        // runDifferentiationExample();
     } catch (const std::exception &e) {
         std::cerr << "Unexpected error in main: " << e.what() << std::endl;
     }

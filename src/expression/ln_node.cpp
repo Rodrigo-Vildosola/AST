@@ -57,6 +57,13 @@ Node* LnNode::clone(NodeFactory &factory) const {
     return factory.ln(operand->clone(factory));
 }
 
+bool LnNode::equals(const Node* other) const {
+    if (const LnNode* ln = dynamic_cast<const LnNode*>(other)) {
+        return operand->equals(ln->operand);
+    }
+    return false;
+}
+
 bool LnNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
     double a = 0, b = 0;
     if (operand->extractLinearCoeffs(var, a, b)) {

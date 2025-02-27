@@ -1,5 +1,4 @@
-#ifndef FUNCTION_NODE_H
-#define FUNCTION_NODE_H
+#pragma once
 
 #include "node.h"
 
@@ -25,7 +24,7 @@ public:
     virtual Node* clone(NodeFactory &factory) const override;
 
     virtual bool extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const override;
-
+    virtual bool equals(const Node* other) const override;
 
 private:
     std::string name;
@@ -35,5 +34,3 @@ private:
 };
 
 } // namespace Expression
-
-#endif

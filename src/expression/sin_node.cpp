@@ -60,6 +60,13 @@ Node* SinNode::clone(NodeFactory &factory) const {
     return factory.sin(operand->clone(factory));
 }
 
+bool SinNode::equals(const Node* other) const {
+    if (const SinNode* sinNode = dynamic_cast<const SinNode*>(other)) {
+        return operand->equals(sinNode->operand);
+    }
+    return false;
+}
+
 bool SinNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
     double a = 0, b = 0;
     if (operand->extractLinearCoeffs(var, a, b)) {

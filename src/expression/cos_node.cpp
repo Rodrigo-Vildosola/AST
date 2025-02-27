@@ -61,6 +61,13 @@ Node* CosNode::clone(NodeFactory &factory) const {
     return factory.cos(operand->clone(factory));
 }
 
+bool CosNode::equals(const Node* other) const {
+    if (const CosNode* cosNode = dynamic_cast<const CosNode*>(other)) {
+        return operand->equals(cosNode->operand);
+    }
+    return false;
+}
+
 bool CosNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
     double a = 0, b = 0;
     if (operand->extractLinearCoeffs(var, a, b)) {

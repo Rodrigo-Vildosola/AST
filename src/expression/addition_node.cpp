@@ -82,6 +82,15 @@ Node* AdditionNode::clone(NodeFactory &factory) const {
     return factory.add(clonedLeft, clonedRight);
 }
 
+bool AdditionNode::equals(const Node* other) const {
+    if (const AdditionNode* add = dynamic_cast<const AdditionNode*>(other)) {
+        // Addition is commutative.
+        return (left->equals(add->left) && right->equals(add->right)) ||
+               (left->equals(add->right) && right->equals(add->left));
+    }
+    return false;
+}
+
 bool AdditionNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
     double a1 = 0, b1 = 0, a2 = 0, b2 = 0;
     bool ok1 = left->extractLinearCoeffs(var, a1, b1);

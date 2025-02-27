@@ -86,6 +86,20 @@ Node* FunctionNode::clone(NodeFactory &factory) const {
     return factory.func(name, expectedArgCount, clonedArgs, callback);
 }
 
+bool FunctionNode::equals(const Node* other) const {
+    if (const FunctionNode* func = dynamic_cast<const FunctionNode*>(other)) {
+        if (name != func->name || expectedArgCount != func->expectedArgCount || arguments.size() != func->arguments.size())
+            return false;
+        for (size_t i = 0; i < arguments.size(); ++i) {
+            if (!arguments[i]->equals(func->arguments[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
 bool FunctionNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
     bool allConst = true;
     std::vector<double> argVals;

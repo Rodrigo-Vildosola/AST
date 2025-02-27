@@ -1,5 +1,4 @@
-#ifndef NUMBERNODE_HPP
-#define NUMBERNODE_HPP
+#pragma once
 
 #include "node.h"
 
@@ -25,11 +24,10 @@ public:
     double getValue() const;
 
     virtual bool extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const override;
+    virtual bool equals(const Node* other) const override;
 
 private:
     double value;
 };
 
 } // namespace Expression
-
-#endif

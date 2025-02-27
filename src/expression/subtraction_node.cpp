@@ -70,6 +70,13 @@ Node* SubtractionNode::clone(NodeFactory &factory) const {
     return factory.sub(left->clone(factory), right->clone(factory));
 }
 
+bool SubtractionNode::equals(const Node* other) const {
+    if (const SubtractionNode* sub = dynamic_cast<const SubtractionNode*>(other)) {
+        return left->equals(sub->left) && right->equals(sub->right);
+    }
+    return false;
+}
+
 bool SubtractionNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
     double a1 = 0, b1 = 0, a2 = 0, b2 = 0;
     bool ok1 = left->extractLinearCoeffs(var, a1, b1);

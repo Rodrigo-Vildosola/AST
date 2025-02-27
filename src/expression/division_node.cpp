@@ -95,6 +95,13 @@ Node* DivisionNode::clone(NodeFactory &factory) const {
     return factory.div(left->clone(factory), right->clone(factory));
 }
 
+bool DivisionNode::equals(const Node* other) const {
+    if (const DivisionNode* div = dynamic_cast<const DivisionNode*>(other)) {
+        return left->equals(div->left) && right->equals(div->right);
+    }
+    return false;
+}
+
 bool DivisionNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
     double a_num = 0, b_num = 0;
     double a_den = 0, b_den = 0;

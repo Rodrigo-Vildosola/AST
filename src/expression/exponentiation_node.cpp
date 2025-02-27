@@ -93,6 +93,13 @@ Node* ExponentiationNode::clone(NodeFactory &factory) const {
     return factory.exp(left->clone(factory), right->clone(factory));
 }
 
+bool ExponentiationNode::equals(const Node* other) const {
+    if (const ExponentiationNode* exp = dynamic_cast<const ExponentiationNode*>(other)) {
+        return left->equals(exp->left) && right->equals(exp->right);
+    }
+    return false;
+}
+
 bool ExponentiationNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
     double a_exp = 0, b_exp = 0;
     // Check if exponent is constant.

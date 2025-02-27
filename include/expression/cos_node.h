@@ -1,5 +1,4 @@
-#ifndef COSNODE_HPP
-#define COSNODE_HPP
+#pragma once
 
 #include "unary_op_node.h"
 
@@ -22,9 +21,8 @@ public:
     virtual Node* clone(NodeFactory &factory) const override;
 
     virtual bool extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const override;
+    virtual bool equals(const Node* other) const override;
 
 };
 
 } // namespace Expression
-
-#endif

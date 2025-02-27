@@ -98,6 +98,15 @@ Node* MultiplicationNode::clone(NodeFactory &factory) const {
     return factory.mul(left->clone(factory), right->clone(factory));
 }
 
+bool MultiplicationNode::equals(const Node* other) const {
+    if (const MultiplicationNode* mul = dynamic_cast<const MultiplicationNode*>(other)) {
+        // Multiplication is commutative.
+        return (left->equals(mul->left) && right->equals(mul->right)) ||
+               (left->equals(mul->right) && right->equals(mul->left));
+    }
+    return false;
+}
+
 bool MultiplicationNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
     // Try left factor as constant.
     double a1 = 0, b1 = 0;

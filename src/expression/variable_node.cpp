@@ -45,9 +45,15 @@ Node* VariableNode::substitute(const std::string& variable, Node* value, NodeFac
     return const_cast<VariableNode*>(this); 
 }
 
-// **Clone**
 Node* VariableNode::clone(NodeFactory &factory) const {
     return factory.var(name);
+}
+
+bool VariableNode::equals(const Node* other) const {
+    if (const VariableNode* var = dynamic_cast<const VariableNode*>(other)) {
+        return name == var->name;
+    }
+    return false;
 }
 
 bool VariableNode::extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {

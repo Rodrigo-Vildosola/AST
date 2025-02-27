@@ -1,6 +1,4 @@
-#ifndef NODE_HPP
-#define NODE_HPP
-
+#pragma once
 #include "_pch.h"
 #include "tracing/trace.h"
 
@@ -35,8 +33,16 @@ public:
     virtual bool extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const {
         return false;
     }
+
+    /**
+     * @brief Check if this node is structurally equal to another node.
+     *
+     * The default implementation compares the string representations.
+     * Derived classes should override this with a more efficient and robust method.
+     */
+    virtual bool equals(const Node* other) const {
+        return toString() == other->toString();
+    }
 };
 
 } // namespace Expression
-
-#endif

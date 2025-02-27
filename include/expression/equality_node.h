@@ -1,5 +1,4 @@
-#ifndef EQUALITY_NODE_H
-#define EQUALITY_NODE_H
+#pragma once
 
 #include "node.h"
 
@@ -32,5 +31,3 @@ public:
 };
 
 } // namespace Expression
-
-#endif

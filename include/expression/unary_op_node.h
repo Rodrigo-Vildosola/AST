@@ -1,5 +1,4 @@
-#ifndef UNARYOPNODE_HPP
-#define UNARYOPNODE_HPP
+#pragma once
 
 #include "node.h"
 
@@ -16,5 +15,3 @@ protected:
 };
 
 } // namespace Expression
-
-#endif

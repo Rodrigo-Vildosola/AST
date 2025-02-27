@@ -1,5 +1,4 @@
-#ifndef VARIABLE_NODE_H
-#define VARIABLE_NODE_H
+#pragma once
 
 #include "node.h"
 #include <string>
@@ -26,11 +25,10 @@ public:
     const std::string& getName() const { return name; }
 
     virtual bool extractLinearCoeffs(const std::string &var, double &coeff, double &constant) const override;
+    virtual bool equals(const Node* other) const override;
 
 private:
     std::string name;
 };
 
 } // namespace Expression
-
-#endif
