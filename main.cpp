@@ -117,8 +117,6 @@ void runSolveExample() {
             f.num(11)                                      // Right: 11
         );
 
-        arena.printStats();
-
         if (EqualityNode* eq = dynamic_cast<EqualityNode*>(equation)) {
             Node* solution = eq->solveFor("x", f);
 
@@ -127,6 +125,8 @@ void runSolveExample() {
         } else {
             throw std::runtime_error("Not an equation");
         }
+
+        arena.printStats();
         // Note: Do not manually delete 'equation' or 'solution' when using the arena allocator.
         // The arena will take care of deallocation when it goes out of scope.
     } catch (const std::exception &e) {
