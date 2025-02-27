@@ -12,7 +12,7 @@ public:
     explicit LnNode(Node* operand);
     virtual ~LnNode();
 
-    virtual double evaluate(const Env &env) override;
+    virtual double evaluate(const Env &env) const override;
     virtual std::string toString() const override;
 
     // Full Arena

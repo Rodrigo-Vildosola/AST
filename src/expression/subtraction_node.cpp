@@ -12,7 +12,7 @@ SubtractionNode::~SubtractionNode() {
     // no child deletion
 }
 
-double SubtractionNode::evaluate(const Env &env) {
+double SubtractionNode::evaluate(const Env &env) const {
     double leftVal = left->evaluate(env);
     double rightVal = right->evaluate(env);
     double result = leftVal - rightVal;

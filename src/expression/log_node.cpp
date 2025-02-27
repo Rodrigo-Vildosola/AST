@@ -13,7 +13,7 @@ LogNode::LogNode(Node* base, Node* operand)
 
 LogNode::~LogNode() {}
 
-double LogNode::evaluate(const Env &env) {
+double LogNode::evaluate(const Env &env) const {
     double baseVal = left->evaluate(env);
     double operandVal = right->evaluate(env);
 

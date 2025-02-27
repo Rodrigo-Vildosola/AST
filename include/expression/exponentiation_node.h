@@ -12,7 +12,7 @@ public:
     ExponentiationNode(Node* base, Node* exponent);
     virtual ~ExponentiationNode();
 
-    virtual double evaluate(const Env &env) override;
+    virtual double evaluate(const Env &env) const override;
     virtual std::string toString() const override;
 
     // Full Arena

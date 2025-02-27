@@ -12,7 +12,7 @@ TanNode::TanNode(Node* operand)
 
 TanNode::~TanNode() {}
 
-double TanNode::evaluate(const Env &env) {
+double TanNode::evaluate(const Env &env) const {
     double opVal = operand->evaluate(env);
     double result = std::tan(opVal);
     Trace::addTransformation("Evaluating TanNode", toString(), std::to_string(result));

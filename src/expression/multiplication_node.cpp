@@ -12,7 +12,7 @@ MultiplicationNode::MultiplicationNode(Node* left, Node* right)
 
 MultiplicationNode::~MultiplicationNode() {}
 
-double MultiplicationNode::evaluate(const Env &env) {
+double MultiplicationNode::evaluate(const Env &env) const {
     double leftVal = left->evaluate(env);
     double rightVal = right->evaluate(env);
     double result = leftVal * rightVal;

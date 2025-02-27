@@ -10,7 +10,7 @@ AdditionNode::AdditionNode(Node* left, Node* right)
 
 AdditionNode::~AdditionNode() {}
 
-double AdditionNode::evaluate(const Env &env) {
+double AdditionNode::evaluate(const Env &env) const {
     double leftVal = left->evaluate(env);
     double rightVal = right->evaluate(env);
     double result = leftVal + rightVal;

@@ -14,7 +14,7 @@ SinNode::~SinNode() {
     // no manual deletion
 }
 
-double SinNode::evaluate(const Env &env) {
+double SinNode::evaluate(const Env &env) const {
     double opVal = operand->evaluate(env);
     double result = std::sin(opVal);
     Trace::addTransformation("Evaluating SinNode", toString(), std::to_string(result));

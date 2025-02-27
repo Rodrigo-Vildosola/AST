@@ -12,7 +12,7 @@ public:
     explicit TanNode(Node* operand);
     virtual ~TanNode();
 
-    virtual double evaluate(const Env &env) override;
+    virtual double evaluate(const Env &env) const override;
     virtual std::string toString() const override;
 
     // Simplification method with constant folding and room for more advanced rules.

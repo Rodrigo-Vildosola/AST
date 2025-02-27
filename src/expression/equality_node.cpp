@@ -85,7 +85,7 @@ EqualityNode::~EqualityNode() {
     }
 }
 
-double EqualityNode::evaluate(const Env &env) {
+double EqualityNode::evaluate(const Env &env) const {
     double leftVal = left->evaluate(env);
     double rightVal = right->evaluate(env);
     bool equal = (std::fabs(leftVal - rightVal) < 1e-9);

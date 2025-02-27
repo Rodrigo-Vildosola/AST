@@ -202,13 +202,44 @@ void runEvalExampleDefault() {
     delete expr;
 }
 
+void runSolvePolynomialExample() {
+    Trace::clear();
+    std::cout << "\n=== Solve Higher Order Polynomial Example ===\n";
+
+    try {
+        // Use the Arena Allocator for full arena management.
+        Arena arena;
+        ArenaAllocator arenaAlloc(arena);
+        // Create a NodeFactory that uses the arena allocator.
+        NodeFactory factory(&arenaAlloc, AllocatorPolicy::Arena);
+
+        // Build an equation: x^3 == 27  (i.e., x^3 - 27 = 0)
+        Node* equation = factory.eq(
+            factory.exp(factory.var("x"), factory.num(2)),
+            factory.num(9)
+        );
+
+        std::cout << "Equation: " << equation->toString() << std::endl;
+
+        // Use the extended solver to extract polynomial coefficients and solve.
+        // Our current implementation supports only up to quadratic equations.
+        auto roots = Solver::solve_polynomial_equation(dynamic_cast<EqualityNode*>(equation), "x", factory);
+        std::cout << "Polynomial Roots:" << std::endl;
+        for (double r : roots) {
+            std::cout << "  x = " << r << std::endl;
+        }
+    } catch (const std::exception &e) {
+        std::cerr << "Error solving polynomial: " << e.what() << std::endl;
+    }
+}
+
 int main() {
     try {
         // runEvalExampleArena();
         // runEvalExampleDefault();
 
         runSolveExample();
-
+        runSolvePolynomialExample();
         // runEvaluationExample();
         // runSimplificationExample();
         // runDifferentiationExample();

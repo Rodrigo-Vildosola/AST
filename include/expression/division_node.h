@@ -13,7 +13,7 @@ public:
     DivisionNode(Node* left, Node* right);
     virtual ~DivisionNode();
 
-    virtual double evaluate(const Env &env) override;
+    virtual double evaluate(const Env &env) const override;
     virtual std::string toString() const override;
 
     // Full Arena approach: pass NodeFactory to these methods

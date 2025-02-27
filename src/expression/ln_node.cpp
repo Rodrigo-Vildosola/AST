@@ -11,7 +11,7 @@ LnNode::LnNode(Node* operand)
 
 LnNode::~LnNode() {}
 
-double LnNode::evaluate(const Env &env) {
+double LnNode::evaluate(const Env &env) const {
     double opVal = operand->evaluate(env);
     if (opVal <= 0) {
         throw std::runtime_error("Math error: ln of non-positive number.");

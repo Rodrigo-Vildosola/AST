@@ -17,7 +17,7 @@ DivisionNode::~DivisionNode() {
     // No child deletion if using Full Arena.
 }
 
-double DivisionNode::evaluate(const Env &env) {
+double DivisionNode::evaluate(const Env &env) const {
     double leftVal = left->evaluate(env);
     double rightVal = right->evaluate(env);
 

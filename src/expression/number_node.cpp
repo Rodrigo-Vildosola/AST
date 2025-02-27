@@ -9,7 +9,7 @@ NumberNode::NumberNode(double value) : value(value) {}
 
 NumberNode::~NumberNode() {}
 
-double NumberNode::evaluate(const Env &env) {
+double NumberNode::evaluate(const Env &env) const {
     Trace::add("Evaluating NumberNode: " + toString());
     return value;
 }

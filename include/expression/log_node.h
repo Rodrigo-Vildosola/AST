@@ -12,7 +12,7 @@ public:
     LogNode(Node* base, Node* operand);
     virtual ~LogNode();
 
-    virtual double evaluate(const Env &env) override;
+    virtual double evaluate(const Env &env) const override;
     virtual std::string toString() const override;
 
     // Full Arena

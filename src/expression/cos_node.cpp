@@ -12,7 +12,7 @@ CosNode::CosNode(Node* operand)
 
 CosNode::~CosNode() {}
 
-double CosNode::evaluate(const Env &env) {
+double CosNode::evaluate(const Env &env) const {
     double opVal = operand->evaluate(env);
     double result = std::cos(opVal);
     Trace::addTransformation("Evaluating CosNode", toString(), std::to_string(result));

@@ -10,7 +10,7 @@ VariableNode::VariableNode(const std::string& name)
 
 VariableNode::~VariableNode() {}
 
-double VariableNode::evaluate(const Env &env) {
+double VariableNode::evaluate(const Env &env) const {
     auto it = env.find(name);
     if (it != env.end()) {
         return it->second;

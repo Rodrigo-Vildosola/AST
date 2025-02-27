@@ -12,7 +12,7 @@ public:
     explicit CosNode(Node* operand);
     virtual ~CosNode();
 
-    virtual double evaluate(const Env &env) override;
+    virtual double evaluate(const Env &env) const override;
     virtual std::string toString() const override;
 
     virtual Node* simplify(NodeFactory &factory) const override;

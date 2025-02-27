@@ -14,7 +14,7 @@ class Node {
 public:
     virtual ~Node();
     // Evaluate the expression represented by this node.
-    virtual double evaluate(const Env &env) = 0;
+    virtual double evaluate(const Env &env) const = 0;
     // Return a string representation of the node.
     virtual std::string toString() const = 0;
 

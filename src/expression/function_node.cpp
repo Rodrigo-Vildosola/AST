@@ -21,7 +21,7 @@ FunctionNode::~FunctionNode() {
     }
 }
 
-double FunctionNode::evaluate(const Env &env) {
+double FunctionNode::evaluate(const Env &env) const {
     if (arguments.size() != (size_t)expectedArgCount) {
         throw std::runtime_error("Function " + name + " expects " + std::to_string(expectedArgCount) +
                                  " arguments, but got " + std::to_string(arguments.size()));

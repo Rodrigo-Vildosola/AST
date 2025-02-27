@@ -12,7 +12,7 @@ public:
     AdditionNode(Node* left, Node* right);
     virtual ~AdditionNode();
 
-    virtual double evaluate(const Env &env) override;
+    virtual double evaluate(const Env &env) const override;
     virtual std::string toString() const override;
 
     // **Full Arena approach**: pass NodeFactory to all these methods

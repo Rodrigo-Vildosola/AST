@@ -17,7 +17,7 @@ ExponentiationNode::~ExponentiationNode() {
     // no child deletion
 }
 
-double ExponentiationNode::evaluate(const Env &env) {
+double ExponentiationNode::evaluate(const Env &env) const {
     double baseVal = left->evaluate(env);
     double exponentVal = right->evaluate(env);
 
