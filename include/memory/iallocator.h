@@ -1,5 +1,4 @@
-#ifndef IALLOCATOR_H
-#define IALLOCATOR_H
+#pragma once
 
 #include "expression/node.h"
 
@@ -28,5 +27,3 @@ public:
 };
 
 } // namespace Expression
-
-#endif

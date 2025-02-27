@@ -1,5 +1,4 @@
-#ifndef ARENA_ALLOCATOR_H
-#define ARENA_ALLOCATOR_H
+#pragma once
 
 #include "iallocator.h"
 #include "arena.h"
@@ -69,5 +68,3 @@ public:
 };
 
 } // namespace Expression
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef NODE_FACTORY_H
-#define NODE_FACTORY_H
+#pragma once
 
 #include "memory/iallocator.h"
 #include "memory/arena_allocator.h"
@@ -178,5 +177,3 @@ public:
 };
 
 } // namespace Expression
-
-#endif // NODE_FACTORY_H

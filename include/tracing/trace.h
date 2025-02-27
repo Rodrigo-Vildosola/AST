@@ -1,5 +1,4 @@
-#ifndef TRACE_HPP
-#define TRACE_HPP
+#pragma once
 
 #include "_pch.h"
 #include <nlohmann/json.hpp>
@@ -41,5 +40,3 @@ private:
 };
 
 } // namespace Expression
-
-#endif

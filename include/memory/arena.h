@@ -1,5 +1,4 @@
-#ifndef ARENA_H
-#define ARENA_H
+#pragma once
 
 #include <vector>
 #include <cstdlib>
@@ -164,5 +163,3 @@ public:
 };
 
 }  // namespace Expression
-
-#endif  // ARENA_H

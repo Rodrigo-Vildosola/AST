@@ -1,5 +1,4 @@
-#ifndef ALLOCATION_CONFIG_H
-#define ALLOCATION_CONFIG_H
+#pragma once
 
 namespace Expression {
 
@@ -21,5 +20,3 @@ private:
 };
 
 } // namespace Expression
-
-#endif

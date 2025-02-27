@@ -1,5 +1,4 @@
-#ifndef DEFAULT_ALLOCATOR_H
-#define DEFAULT_ALLOCATOR_H
+#pragma once
 
 #include "iallocator.h"
 #include "expression/number_node.h"
@@ -66,5 +65,3 @@ public:
 };
 
 } // namespace Expression
-
-#endif
