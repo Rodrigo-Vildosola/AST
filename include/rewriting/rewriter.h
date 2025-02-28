@@ -44,7 +44,6 @@ public:
                 if (rule->matches(current)) {
                     Node* newNode = rule->apply(current, factory);
                     if (!newNode->toString().empty() && newNode->toString() != current->toString()) {
-                        Trace::addTransformation("Rewrite", current->toString(), newNode->toString());
                         current = newNode;
                         changed = true;
                         break;
@@ -54,6 +53,10 @@ public:
         }
 
         return current->simplify(factory);
+    }
+
+    void add_rule(std::unique_ptr<RewriteRule> rule) {
+        rules.push_back(std::move(rule));
     }
 };
 

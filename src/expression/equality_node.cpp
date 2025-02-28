@@ -5,7 +5,7 @@
 #include "expression/variable_node.h"
 #include "expression/number_node.h"
 #include "helpers/node_factory.h"
-#include "tracing/trace.h"
+
 
 namespace Expression {
 
@@ -89,7 +89,6 @@ double EqualityNode::evaluate(const Env &env) const {
     double leftVal = left->evaluate(env);
     double rightVal = right->evaluate(env);
     bool equal = (std::fabs(leftVal - rightVal) < 1e-9);
-    Trace::addTransformation("Evaluating EqualityNode", toString(), equal ? "true" : "false");
     return equal ? 1.0 : 0.0;
 }
 
@@ -102,7 +101,6 @@ Node* EqualityNode::simplify(NodeFactory &factory) const {
     Node* leftS = left->simplify(factory);
     Node* rightS = right->simplify(factory);
     if (leftS->equals(rightS)) {
-        Trace::addTransformation("Simplify EqualityNode", toString(), "true");
         return factory.num(1);
     }
     return factory.eq(leftS, rightS);
@@ -138,13 +136,11 @@ Node* EqualityNode::solveFor(const std::string& variable, NodeFactory &factory) 
 
     // Try to extract coefficients a and b where the equation is: a * x + b = 0
     if (!simplifiedDiff->extractLinearCoeffs(variable, a, b) || a == 0) {
-        Trace::addTransformation("Solving equation", simplifiedDiff->toString(), "Unable to solve linearly");
         return simplifiedDiff->clone(factory);  // Return unchanged if not solvable.
     }
 
     double solution = -b / a;
     Node* solNode = factory.num(solution);
-    Trace::addTransformation("Solving equation", simplifiedDiff->toString(), solNode->toString());
     return solNode;
 }
 

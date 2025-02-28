@@ -4,7 +4,7 @@
 #include "expression/multiplication_node.h"
 #include "expression/number_node.h"
 #include "helpers/node_factory.h"
-#include "tracing/trace.h"
+
 
 namespace Expression {
 
@@ -21,7 +21,6 @@ double LogNode::evaluate(const Env &env) const {
         throw std::runtime_error("Math error: log with invalid base or operand.");
     }
     double result = std::log(operandVal) / std::log(baseVal);
-    Trace::addTransformation("Evaluating LogNode", toString(), std::to_string(result));
     return result;
 }
 

@@ -22,17 +22,24 @@ void runSolveExample() {
         Arena arena;
         ArenaAllocator arenaAlloc(arena);
         // Create a NodeFactory that uses the arena allocator.
-        NodeFactory factory(&arenaAlloc, AllocatorPolicy::Arena);
+        NodeFactory f(&arenaAlloc, AllocatorPolicy::Arena);
 
         // Build an equation: x^3 == 27  (i.e., x^3 - 27 = 0)
-        Node* equation = factory.eq(
-            factory.exp(factory.var("x"), factory.num(3)),
-            factory.num(10)
+        Node* left = f.add(
+            f.add(
+                f.mul(f.exp(f.var("x"), f.num(3)), f.num(3)),
+                f.mul(f.exp(f.var("x"), f.num(2)), f.num(2))
+            ),
+            f.mul(f.exp(f.var("x"), f.num(4)), f.num(4))
         );
+
+        Node* right = f.num(10);
+
+        Node* equation = f.eq(left, right);
 
         std::cout << "Equation: " << equation->toString() << std::endl;
 
-        std::vector<double> roots = ExtendedSolver::solve_equation(dynamic_cast<const EqualityNode*>(equation), "x", factory);
+        std::vector<double> roots = ExtendedSolver::solve_equation(dynamic_cast<const EqualityNode*>(equation), "x", f);
         std::cout << "Real Roots:" << std::endl;
         for (double r : roots) {
             std::cout << "x = " << r << std::endl;

@@ -5,7 +5,7 @@
 #include "expression/division_node.h"
 #include "expression/ln_node.h"
 #include "helpers/node_factory.h"   // NodeFactory
-#include "tracing/trace.h"
+
 #include <cmath>
 
 namespace Expression {
@@ -25,7 +25,6 @@ double ExponentiationNode::evaluate(const Env &env) const {
         throw std::runtime_error("Math error: 0 raised to a non-positive exponent.");
     }
     double result = std::pow(baseVal, exponentVal);
-    Trace::addTransformation("Evaluating ExponentiationNode", toString(), std::to_string(result));
     return result;
 }
 
@@ -35,7 +34,6 @@ std::string ExponentiationNode::toString() const {
 
 // **Symbolic Simplification**
 Node* ExponentiationNode::simplify(NodeFactory &factory) const {
-    std::string before = toString();
     Node* baseSimplified = left->simplify(factory);
     Node* exponentSimplified = right->simplify(factory);
 
@@ -44,7 +42,6 @@ Node* ExponentiationNode::simplify(NodeFactory &factory) const {
         if (auto exponentNum = dynamic_cast<NumberNode*>(exponentSimplified)) {
             double value = std::pow(baseNum->getValue(), exponentNum->getValue());
             Node* folded = factory.num(value);
-            Trace::addTransformation("Simplify ExponentiationNode (constant folding)", before, folded->toString());
             return folded;
         }
     }
@@ -54,12 +51,10 @@ Node* ExponentiationNode::simplify(NodeFactory &factory) const {
     if (auto exponentNum = dynamic_cast<NumberNode*>(exponentSimplified)) {
         if (exponentNum->getValue() == 0) {
             Node* folded = factory.num(1);
-            Trace::addTransformation("Simplify ExponentiationNode (zero exponent)", before, folded->toString());
             return folded;
         }
         // x^1 = x
         if (exponentNum->getValue() == 1) {
-            Trace::addTransformation("Simplify ExponentiationNode (exponent one)", before, baseSimplified->toString());
             return baseSimplified;
         }
     }
@@ -68,19 +63,16 @@ Node* ExponentiationNode::simplify(NodeFactory &factory) const {
     if (auto baseNum = dynamic_cast<NumberNode*>(baseSimplified)) {
         if (baseNum->getValue() == 0) {
             Node* folded = factory.num(0);
-            Trace::addTransformation("Simplify ExponentiationNode (zero base)", before, folded->toString());
             return folded;
         }
         // 1^x = 1
         if (baseNum->getValue() == 1) {
             Node* folded = factory.num(1);
-            Trace::addTransformation("Simplify ExponentiationNode (base one)", before, folded->toString());
             return folded;
         }
     }
 
     Node* result = factory.exp(baseSimplified, exponentSimplified);
-    Trace::addTransformation("Simplify ExponentiationNode", before, result->toString());
     return result;
 }
 

@@ -1,6 +1,6 @@
 #include "expression/number_node.h"
 #include "helpers/node_factory.h"  // NodeFactory
-#include "tracing/trace.h"
+
 #include <sstream>
 
 namespace Expression {
@@ -10,7 +10,6 @@ NumberNode::NumberNode(double value) : value(value) {}
 NumberNode::~NumberNode() {}
 
 double NumberNode::evaluate(const Env &env) const {
-    Trace::add("Evaluating NumberNode: " + toString());
     return value;
 }
 

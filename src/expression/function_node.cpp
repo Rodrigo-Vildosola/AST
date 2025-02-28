@@ -1,6 +1,6 @@
 #include "expression/function_node.h"
 #include "helpers/node_factory.h"
-#include "tracing/trace.h"
+
 
 namespace Expression {
 
@@ -31,7 +31,6 @@ double FunctionNode::evaluate(const Env &env) const {
         argVals.push_back(arg->evaluate(env));
     }
     double result = callback(argVals);
-    Trace::addTransformation("Evaluating FunctionNode: " + name, toString(), std::to_string(result));
     return result;
 }
 
@@ -61,7 +60,6 @@ Node* FunctionNode::simplify(NodeFactory &factory) const {
 
 // **Derivative** - not yet implemented
 Node* FunctionNode::derivative(const std::string& variable, NodeFactory &factory) const {
-    Trace::addTransformation("Derivative of function " + name, toString(), "Unchanged");
     return clone(factory);
 }
 

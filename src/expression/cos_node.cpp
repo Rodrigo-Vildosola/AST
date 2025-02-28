@@ -3,7 +3,7 @@
 #include "expression/multiplication_node.h"
 #include "expression/sin_node.h"
 #include "helpers/node_factory.h"  // NodeFactory
-#include "tracing/trace.h"
+
 
 namespace Expression {
 
@@ -15,7 +15,6 @@ CosNode::~CosNode() {}
 double CosNode::evaluate(const Env &env) const {
     double opVal = operand->evaluate(env);
     double result = std::cos(opVal);
-    Trace::addTransformation("Evaluating CosNode", toString(), std::to_string(result));
     return result;
 }
 
@@ -25,25 +24,21 @@ std::string CosNode::toString() const {
 
 // **Simplification (Full Arena)**
 Node* CosNode::simplify(NodeFactory &factory) const {
-    std::string before = toString();
     Node* simplifiedOperand = operand->simplify(factory);
 
     // Constant folding: if the operand is a constant, evaluate cos immediately.
     if (auto num = dynamic_cast<NumberNode*>(simplifiedOperand)) {
         double value = num->getValue();
         Node* folded = factory.num(std::cos(value));
-        Trace::addTransformation("Simplify CosNode (constant folding)", before, folded->toString());
         return folded;
     }
 
     Node* result = factory.cos(simplifiedOperand);
-    Trace::addTransformation("Simplify CosNode", before, result->toString());
     return result;
 }
 
 // **Differentiation** d/dx cos(x) = -sin(x) * dx
 Node* CosNode::derivative(const std::string& variable, NodeFactory &factory) const {
-    std::string before = toString();
     // -sin(operand) * operand->derivative
     Node* negativeOne = factory.num(-1);
     Node* sinTerm = factory.sin(operand->clone(factory));
@@ -52,16 +47,13 @@ Node* CosNode::derivative(const std::string& variable, NodeFactory &factory) con
     Node* mulInner = factory.mul(sinTerm, derivTerm);
     Node* derivativeResult = factory.mul(negativeOne, mulInner);
 
-    Trace::addTransformation("Differentiate CosNode", before, derivativeResult->toString());
     return derivativeResult;
 }
 
 // **Substitution**
 Node* CosNode::substitute(const std::string& variable, Node* value, NodeFactory &factory) const {
-    std::string before = toString();
     Node* substitutedOperand = operand->substitute(variable, value, factory);
     Node* result = factory.cos(substitutedOperand);
-    Trace::addTransformation("Substituting in CosNode", before, result->toString());
     return result;
 }
 

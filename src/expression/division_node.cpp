@@ -4,7 +4,7 @@
 #include "expression/exponentiation_node.h"
 #include "expression/number_node.h"
 #include "helpers/node_factory.h"
-#include "tracing/trace.h"
+
 #include <stdexcept>
 #include <cmath>
 
@@ -13,9 +13,7 @@ namespace Expression {
 DivisionNode::DivisionNode(Node* left, Node* right)
     : BinaryOpNode(left, right) {}
 
-DivisionNode::~DivisionNode() {
-    // No child deletion if using Full Arena.
-}
+DivisionNode::~DivisionNode() {}
 
 double DivisionNode::evaluate(const Env &env) const {
     double leftVal = left->evaluate(env);
@@ -26,7 +24,6 @@ double DivisionNode::evaluate(const Env &env) const {
     }
 
     double result = leftVal / rightVal;
-    Trace::addTransformation("Evaluating DivisionNode", toString(), std::to_string(result));
     return result;
 }
 

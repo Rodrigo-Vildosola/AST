@@ -1,22 +1,19 @@
 #include "expression/subtraction_node.h"
 #include "expression/number_node.h"
 #include "helpers/node_factory.h"
-#include "tracing/trace.h"
+
 
 namespace Expression {
 
 SubtractionNode::SubtractionNode(Node* left, Node* right)
     : BinaryOpNode(left, right) {}
 
-SubtractionNode::~SubtractionNode() {
-    // no child deletion
-}
+SubtractionNode::~SubtractionNode() {}
 
 double SubtractionNode::evaluate(const Env &env) const {
     double leftVal = left->evaluate(env);
     double rightVal = right->evaluate(env);
     double result = leftVal - rightVal;
-    Trace::addTransformation("Evaluating SubtractionNode", toString(), std::to_string(result));
     return result;
 }
 

@@ -2,7 +2,7 @@
 #include "expression/division_node.h"
 #include "expression/number_node.h"
 #include "helpers/node_factory.h"
-#include "tracing/trace.h"
+
 
 namespace Expression {
 
@@ -17,7 +17,6 @@ double LnNode::evaluate(const Env &env) const {
         throw std::runtime_error("Math error: ln of non-positive number.");
     }
     double result = std::log(opVal);
-    Trace::addTransformation("Evaluating LnNode", toString(), std::to_string(result));
     return result;
 }
 

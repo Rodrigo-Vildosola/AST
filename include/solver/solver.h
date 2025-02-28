@@ -5,7 +5,7 @@
 #include "expression/equality_node.h"
 #include "helpers/node_factory.h"
 #include "rewriting/rewriter.h"
-#include "tracing/trace.h"
+
 #include <stdexcept>
 #include <cmath>
 
@@ -22,12 +22,10 @@ public:
 
         double a = 0, b = 0;
         if (!simplified_diff->extractLinearCoeffs(variable, a, b) || a == 0) {
-            Trace::addTransformation("Solving equation", simplified_diff->toString(), "Unable to solve linearly");
             return simplified_diff->clone(factory);  // Or throw an error.
         }
         double solution = -b / a;
         Node* solNode = factory.num(solution);
-        Trace::addTransformation("Solving equation", simplified_diff->toString(), solNode->toString());
         return solNode;
     }
 
@@ -72,23 +70,21 @@ public:
     /// this method extracts its coefficients and uses the polynomial solver.
     /// Otherwise, it falls back to linear solving or throws an error.
     static std::vector<double> solve_equation(const EqualityNode* eq, const std::string &variable, NodeFactory &factory) {
-        Node* diff = factory.sub(eq->left->clone(factory), eq->right->clone(factory));
-        Node* simplified_diff = diff->simplify(factory);
+        Node* diff = factory.sub(eq->left, eq->right);
+        // Node* simplified_diff = diff->simplify(factory);
         
-        Rewriter rewriter;
-        Node* normalized = rewriter.rewrite(simplified_diff, factory);
-        Trace::addTransformation("Normalized Equation", simplified_diff->toString(), normalized->toString());
+        // Rewriter rewriter;
+        // Node* normalized = rewriter.rewrite(simplified_diff, factory);
 
-        std::cout << "Normalized Equation: " << normalized->toString() << std::endl;
+        std::cout << "Normalized Equation: " << diff->toString() << std::endl;
 
-        auto poly = extract_poly(normalized, variable);
+        auto poly = extract_poly(diff, variable);
         auto coeffs = poly_to_vector(poly);
 
         std::ostringstream oss;
         for (size_t i = 0; i < coeffs.size(); i++) {
             oss << "x^" << i << ": " << coeffs[i] << " ";
         }
-        Trace::addTransformation("Extracted Coefficients", normalized->toString(), oss.str());
 
         std::vector<double> roots = solve_polynomial(coeffs);
 
