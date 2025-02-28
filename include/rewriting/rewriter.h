@@ -10,6 +10,7 @@
 #include "rewriting/log_addition_rule.h"
 
 
+#include "rewriting/cse_rewriter.h"
 #include "rewriting/rewrite_rule.h"
 #include "helpers/node_factory.h"
 
@@ -18,9 +19,10 @@ namespace Expression {
 class Rewriter {
 private:
     std::vector<std::unique_ptr<RewriteRule>> rules;
+    CSERewriter cse;
+
 public:
     Rewriter() {
-        // Register default rules.
         rules.push_back(std::make_unique<ExpProductRule>());
         rules.push_back(std::make_unique<ExpDivisionRule>());
         rules.push_back(std::make_unique<LnDifferenceRule>());
@@ -32,9 +34,10 @@ public:
     }
 
     // Recursively apply rewriting rules to a node until no more changes occur.
-    Node* rewrite(const Node* node, NodeFactory &factory) const {
-        Node* current = node->clone(factory); // Start with a clone.
+    Node* rewrite(Node* node, NodeFactory &factory) {
+        Node* current = node->clone(factory);
         bool changed = true;
+
         while (changed) {
             changed = false;
             for (const auto &rule : rules) {
@@ -42,18 +45,16 @@ public:
                     Node* newNode = rule->apply(current, factory);
                     if (!newNode->toString().empty() && newNode->toString() != current->toString()) {
                         Trace::addTransformation("Rewrite", current->toString(), newNode->toString());
-                        // Replace current with newNode.
-                        delete current;
                         current = newNode;
                         changed = true;
-                        break; // Restart rules on new node.
+                        break;
                     }
                 }
             }
-            // Optionally, traverse children and rewrite recursively.
-            // For brevity, we assume our rules are applied at the top level.
         }
-        return current;
+
+        // Apply Common Subexpression Elimination at the end
+        return current->simplify(factory);
     }
 };
 

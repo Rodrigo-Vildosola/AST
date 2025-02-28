@@ -215,7 +215,7 @@ void runSolvePolynomialExample() {
 
         // Build an equation: x^3 == 27  (i.e., x^3 - 27 = 0)
         Node* equation = factory.eq(
-            factory.exp(factory.var("x"), factory.num(2)),
+            factory.exp(factory.var("x"), factory.num(4)),
             factory.num(9)
         );
 
@@ -233,12 +233,53 @@ void runSolvePolynomialExample() {
     }
 }
 
+void runRewriteExample() {
+    Trace::clear();
+    std::cout << "\n=== Rewrite Equation Example ===\n";
+
+    try {
+        Arena arena;
+        ArenaAllocator arenaAlloc(arena);
+        NodeFactory f(&arenaAlloc, AllocatorPolicy::Arena);
+
+        // Create a simple equation: x == 3
+        // (This means: the expression is an equality node with left side 'x' and right side '3')
+        Node* equation = f.mul(
+            f.exp(f.num(10), f.num(2)),
+            f.exp(f.num(10), f.num(3))
+        );
+
+        std::cout << "Original Equation: " << equation->toString() << std::endl;
+
+        // Use the rewriting engine to further normalize the equation.
+        Rewriter rewriter;
+        Node* rewritten_eq = rewriter.rewrite(equation, f);
+        std::cout << "Rewritten Equation: " << rewritten_eq->toString() << std::endl;
+
+        // Solve the equation using our Solver module.
+        // if (auto eqNode = dynamic_cast<EqualityNode*>(equation)) {
+        //     Node* solution = Solver::solve_linear(eqNode, "x", f);
+        //     std::cout << "Solution for x: " << solution->toString() << std::endl;
+        //     // Note: When using an arena, you do not manually delete nodes.
+        // } else {
+        //     std::cerr << "Not an equation!" << std::endl;
+        // }
+
+        // Note: Do not manually delete 'equation' or 'solution' when using the arena allocator.
+        // The arena will take care of deallocation when it goes out of scope.
+    } catch (const std::exception &e) {
+        std::cerr << "Error during solving: " << e.what() << std::endl;
+    }
+}
+
+
 int main() {
     try {
         // runEvalExampleArena();
         // runEvalExampleDefault();
 
         runSolveExample();
+        runRewriteExample();
         runSolvePolynomialExample();
         // runEvaluationExample();
         // runSimplificationExample();

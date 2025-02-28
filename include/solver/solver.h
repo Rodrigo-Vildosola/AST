@@ -32,7 +32,7 @@ public:
     }
 
     /// Solve an equation using the rewriting engine to normalize the equation first.
-    static Node* solve(const EqualityNode* eq, const std::string &variable, NodeFactory &factory) {
+    static Node* solve(EqualityNode* eq, const std::string &variable, NodeFactory &factory) {
         Rewriter rewriter;
         // First, use the rewriter to transform the equation.
         Node* rewritten = rewriter.rewrite(eq, factory);
