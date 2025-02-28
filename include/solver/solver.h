@@ -65,4 +65,35 @@ public:
     }
 };
 
+class ExtendedSolver {
+public:
+    /// Solve an equation for a variable.
+    /// If the normalized equation can be interpreted as a polynomial in the variable,
+    /// this method extracts its coefficients and uses the polynomial solver.
+    /// Otherwise, it falls back to linear solving or throws an error.
+    static std::vector<double> solve_equation(const EqualityNode* eq, const std::string &variable, NodeFactory &factory) {
+        Node* diff = factory.sub(eq->left->clone(factory), eq->right->clone(factory));
+        Node* simplified_diff = diff->simplify(factory);
+        
+        Rewriter rewriter;
+        Node* normalized = rewriter.rewrite(simplified_diff, factory);
+        Trace::addTransformation("Normalized Equation", simplified_diff->toString(), normalized->toString());
+
+        std::cout << "Normalized Equation: " << normalized->toString() << std::endl;
+
+        auto poly = extract_poly(normalized, variable);
+        auto coeffs = poly_to_vector(poly);
+
+        std::ostringstream oss;
+        for (size_t i = 0; i < coeffs.size(); i++) {
+            oss << "x^" << i << ": " << coeffs[i] << " ";
+        }
+        Trace::addTransformation("Extracted Coefficients", normalized->toString(), oss.str());
+
+        std::vector<double> roots = solve_polynomial(coeffs);
+
+        return roots;
+    }
+};
+
 } // namespace Expression

@@ -53,7 +53,6 @@ public:
             }
         }
 
-        // Apply Common Subexpression Elimination at the end
         return current->simplify(factory);
     }
 };
