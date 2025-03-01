@@ -1,6 +1,7 @@
 #pragma once
 
 #include "helpers/node_factory.h"
+#include "helpers/expr_operators.h"
 #include "expression/node.h"
 #include "solver/solver.h"
 #include <string>
@@ -17,7 +18,6 @@ public:
     // Constructor.
     Expr(Node* n, NodeFactory &f) : node(n), factory(f) {}
 
-    // Copy constructor.
     Expr(const Expr &other) : node(other.node), factory(other.factory) {}
 
     // Overload arithmetic operators.
@@ -78,5 +78,20 @@ public:
         return ExtendedSolver::solve_equation(eq, variable, factory);
     }
 };
+
+// #define BUILD_EXPR(f, X) build_expr(f, [&](){ return (X); })
+
+// inline Expr build_expr(NodeFactory &fact, std::function<Expr()> fn) {
+//     // Just call fn. The user can still do local logic if needed.
+//     return fn();
+// }
+
+inline Expr equals(const Expr &lhs, const Expr &rhs) {
+    NodeFactory &f = lhs.factory; 
+    // We assume both expressions share the same factory, which is typical
+    // if you built them in the same scope. 
+    return Expr(f.eq(lhs.node, rhs.node), f);
+}
+
 
 } // namespace Expression

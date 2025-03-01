@@ -6,6 +6,7 @@
 #include "memory/arena_allocator.h"
 #include "memory/default_allocator.h"
 #include "helpers/arena_node_factory.h"
+#include "helpers/expr_operators.h"
 #include "helpers/expr.h"
 #include "rewriting/rewriter.h"
 #include "solver/solver.h"
@@ -22,22 +23,22 @@ void runSolveExample() {
         // Use the Arena Allocator for full arena management.
         DECLARE_ARENA_FACTORY(f);
 
-        // Build an equation: x^3 == 27  (i.e., x^3 - 27 = 0)
+        // Build an equation: 4 * x ^ 4 + 3 * x ^ 3 + 2 * x ^ 2 == 10  (i.e., 4 * x ^ 4 + 3 * x ^ 3 + 2 * x ^ 2 - 10 = 0)
         Node* left = f.add(
+            f.mul(f.exp(f.var("x"), f.num(4)), f.num(4)),
             f.add(
                 f.mul(f.exp(f.var("x"), f.num(3)), f.num(3)),
                 f.mul(f.exp(f.var("x"), f.num(2)), f.num(2))
-            ),
-            f.mul(f.exp(f.var("x"), f.num(4)), f.num(4))
+            )
         );
 
-        Node* right = f.num(10);
+        Node* right = f.exp(f.num(10), f.num(2));
 
-        Node* equation = f.eq(left, right);
+        Expr eq = Expr(left, f) == Expr(right, f);
 
-        std::cout << "Equation: " << equation->toString() << std::endl;
+        std::cout << "Equation: " << eq.toString() << std::endl;
 
-        std::vector<double> roots = ExtendedSolver::solve_equation(dynamic_cast<const EqualityNode*>(equation), "x", f);
+        auto roots = eq.solveFor("x");
         std::cout << "Real Roots:" << std::endl;
         for (double r : roots) {
             std::cout << "x = " << r << std::endl;
@@ -55,9 +56,8 @@ void runExprExample() {
     try {
         DECLARE_ARENA_FACTORY(f);
 
-        // Build an expression: 2*x + 5 == 20
         Expr x = Expr::Var("x", f);
-        Expr eq = Expr::Num(2, f) * x + Expr::Num(5, f) == Expr::Num(20, f);
+        Expr eq = -2 * x + 5 == 20;
 
         std::cout << "Equation: " << eq.toString() << std::endl;
 
