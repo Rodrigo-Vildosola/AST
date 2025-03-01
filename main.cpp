@@ -32,15 +32,24 @@ void runSolveExample() {
             )
         );
 
-        Node* right = f.exp(f.num(10), f.num(2));
+        Node* right = f.num(10);
 
         Expr eq = Expr(left, f) == Expr(right, f);
 
+        Expr x = Expr::Var("x", f);
+        Expr equation = 4 * (x ^ 4) + 3 * (x ^ 3) + 2 * (x ^ 2) == 10;
         std::cout << "Equation: " << eq.toString() << std::endl;
+        std::cout << "Equation: " << equation.toString() << std::endl;
 
         auto roots = eq.solveFor("x");
         std::cout << "Real Roots:" << std::endl;
         for (double r : roots) {
+            std::cout << "x = " << r << std::endl;
+        }
+
+        auto roots2 = equation.solveFor("x");
+        std::cout << "Real Roots:" << std::endl;
+        for (double r : roots2) {
             std::cout << "x = " << r << std::endl;
         }
     } catch (const std::exception &e) {
