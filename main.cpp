@@ -5,7 +5,8 @@
 #include "memory/arena.h"
 #include "memory/arena_allocator.h"
 #include "memory/default_allocator.h"
-#include "helpers/node_factory.h"
+#include "helpers/arena_node_factory.h"
+#include "helpers/expr.h"
 #include "rewriting/rewriter.h"
 #include "solver/solver.h"
 
@@ -19,10 +20,7 @@ void runSolveExample() {
 
     try {
         // Use the Arena Allocator for full arena management.
-        Arena arena;
-        ArenaAllocator arenaAlloc(arena);
-        // Create a NodeFactory that uses the arena allocator.
-        NodeFactory f(&arenaAlloc, AllocatorPolicy::Arena);
+        DECLARE_ARENA_FACTORY(f);
 
         // Build an equation: x^3 == 27  (i.e., x^3 - 27 = 0)
         Node* left = f.add(
@@ -50,9 +48,34 @@ void runSolveExample() {
 }
 
 
+void runExprExample() {
+    Trace::clear();
+    std::cout << "\n=== Try the new Expr helper Example ===\n";
+
+    try {
+        DECLARE_ARENA_FACTORY(f);
+
+        // Build an expression: 2*x + 5 == 20
+        Expr x = Expr::Var("x", f);
+        Expr eq = Expr::Num(2, f) * x + Expr::Num(5, f) == Expr::Num(20, f);
+
+        std::cout << "Equation: " << eq.toString() << std::endl;
+
+        // Solve for x.
+        auto roots = eq.solveFor("x");
+        std::cout << "Solution(s) for x:" << std::endl;
+        for (double r : roots) {
+            std::cout << "x = " << r << std::endl;
+        }
+    } catch (const std::exception &e) {
+        std::cerr << "Error solving equation: " << e.what() << std::endl;
+    }
+}
+
 int main() {
     try {
         runSolveExample();
+        runExprExample();
     } catch (const std::exception &e) {
         std::cerr << "Unexpected error in main: " << e.what() << std::endl;
     }
